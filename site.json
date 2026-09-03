@@ -1,0 +1,34 @@
+{
+  "site_title": "Ecos del Atlantico",
+  "tagline": "Una familia, muchas voces - One family, many voices",
+  "songs": [
+    {
+      "slug": "cant-help-falling-in-love",
+      "title": "Can't Help Falling in Love with You",
+      "voices": [
+        {
+          "slug": "voz1",
+          "label": "Voz 1",
+          "folder": "ficha1_3",
+          "image": "voz1.png",
+          "tracks": [
+            { "label": "Metrónomo", "file": "metronomo.mp3" },
+            { "label": "Guitarra", "file": "guitarra.mp3" },
+            { "label": "Voz 1", "file": "voz1.mp3" }
+          ]
+        },
+        {
+          "slug": "baritono",
+          "label": "Barítono",
+          "folder": "ficha1_3",
+          "image": "baritono.png",
+          "tracks": [
+            { "label": "Metrónomo", "file": "metronomo.mp3" },
+            { "label": "Guitarra", "file": "guitarra.mp3" },
+            { "label": "Barítono", "file": "baritono.mp3" }
+          ]
+        }
+      ]
+    }
+  ]
+}
