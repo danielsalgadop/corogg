@@ -65,12 +65,15 @@ nav {
     display: flex;
     align-items: center;
     gap: 10px;
+    order: 1;
+    text-decoration: none;
 }
 
 nav ul {
     display: flex;
     list-style: none;
     gap: 2rem;
+    order: 2;
 }
 
 nav a {
@@ -84,6 +87,248 @@ nav a {
 
 nav a:hover {
     color: var(--accent-gold);
+}
+
+.help-link {
+    border: 1px solid var(--spain-red);
+    color: #fff;
+    padding: 0.55rem 0.9rem;
+}
+
+.help-link:hover {
+    background: var(--spain-red);
+    color: #fff;
+}
+
+.help-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 10%;
+}
+
+.help-intro {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.help-intro h1 {
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+}
+
+.help-section {
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 3px solid var(--accent-gold);
+    margin-bottom: 1.25rem;
+    padding: 1.5rem 1.75rem;
+}
+
+.help-section h2 {
+    color: var(--accent-gold);
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.help-section p {
+    color: var(--text-light);
+    max-width: 75ch;
+}
+
+.help-video {
+    margin-top: 2.5rem;
+}
+
+.video-frame {
+    aspect-ratio: 16 / 9;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.video-frame iframe {
+    border: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.selection-page {
+    min-height: calc(100vh - 90px);
+    padding: 5rem 10% 6rem;
+    position: relative;
+}
+
+.selection-page::before {
+    color: rgba(223, 183, 108, 0.08);
+    content: "♫";
+    font-family: serif;
+    font-size: 15rem;
+    line-height: 1;
+    position: absolute;
+    right: 5%;
+    top: 4%;
+    z-index: -1;
+}
+
+.selection-intro {
+    margin: 0 auto 3.5rem;
+    max-width: 700px;
+    text-align: center;
+}
+
+.selection-kicker {
+    color: var(--spain-red);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.selection-intro h1 {
+    color: #fff;
+    font-size: clamp(2.2rem, 6vw, 4.2rem);
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+}
+
+.selection-intro > p:last-child {
+    color: rgba(244, 244, 246, 0.72);
+    font-size: 1.05rem;
+}
+
+.voice-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0 auto;
+    max-width: 1050px;
+}
+
+.voice-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+    overflow: hidden;
+    padding: 2rem;
+    position: relative;
+    text-decoration: none;
+    transition: border-color 0.3s, transform 0.3s, background 0.3s;
+}
+
+.voice-card::after {
+    bottom: -2.5rem;
+    color: rgba(255, 255, 255, 0.08);
+    content: "♩";
+    font-family: serif;
+    font-size: 10rem;
+    line-height: 1;
+    position: absolute;
+    right: 0.5rem;
+}
+
+.voice-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-gold);
+    color: #fff;
+    transform: translateY(-8px);
+}
+
+.voice-number,
+.ficha-card > span {
+    color: var(--accent-gold);
+    font-family: monospace;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+}
+
+.voice-card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: auto;
+}
+
+.voice-card-text {
+    color: rgba(244, 244, 246, 0.72);
+    margin: 0.75rem 0 1.75rem;
+    max-width: 18rem;
+}
+
+.voice-card-action {
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.voice-card-action span {
+    color: var(--accent-gold);
+    font-size: 1.2rem;
+    margin-left: 0.35rem;
+}
+
+.voice-one { border-top: 4px solid var(--spain-red); }
+.voice-two { border-top: 4px solid var(--accent-gold); }
+.voice-three { border-top: 4px solid var(--usa-blue); }
+
+.ficha-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 0 auto;
+    max-width: 900px;
+}
+
+.ficha-card {
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 170px;
+    padding: 1.5rem;
+    position: relative;
+    text-decoration: none;
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.ficha-card::before {
+    background: var(--accent-gold);
+    content: "";
+    height: 3px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: width 0.3s;
+    width: 0;
+}
+
+.ficha-card:hover {
+    background: rgba(223, 183, 108, 0.1);
+    border-color: var(--accent-gold);
+    transform: translateY(-5px);
+}
+
+.ficha-card:hover::before {
+    width: 100%;
+}
+
+.ficha-card strong {
+    font-family: 'Cinzel', serif;
+    font-size: 1.35rem;
+    margin-top: auto;
+}
+
+.ficha-card small {
+    color: rgba(244, 244, 246, 0.58);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
 }
 
 .hero {
@@ -119,6 +364,79 @@ nav a:hover {
 .flag-es { background: var(--spain-red); flex: 1; }
 .flag-us { background: var(--usa-blue); flex: 1; }
 
+.song-library {
+    background: rgba(255, 255, 255, 0.025);
+    border-top: 1px solid rgba(223, 183, 108, 0.18);
+    padding: 4rem 10% 5rem;
+}
+
+.song-library-heading {
+    margin: 0 auto 2rem;
+    max-width: 1050px;
+}
+
+.song-library-heading h2 {
+    color: var(--accent-gold);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: 0.5rem;
+}
+
+.song-library-heading > p:last-child {
+    color: rgba(244, 244, 246, 0.72);
+}
+
+.song-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin: 0 auto;
+    max-width: 1050px;
+}
+
+.song-card {
+    background: linear-gradient(120deg, rgba(170, 21, 21, 0.35), rgba(0, 40, 104, 0.35));
+    border: 1px solid rgba(223, 183, 108, 0.42);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 170px;
+    padding: 1.5rem 1.75rem;
+    text-decoration: none;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.song-card:hover {
+    border-color: var(--accent-gold);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+}
+
+.song-card-number {
+    color: var(--accent-gold);
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+
+.song-card strong {
+    font-family: 'Cinzel', serif;
+    font-size: 1.35rem;
+    margin-top: auto;
+}
+
+.song-card > span:last-child {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.song-card > span:last-child span {
+    color: var(--accent-gold);
+    font-size: 1.1rem;
+    margin-left: 0.35rem;
+}
+
 .hero h1 {
     font-size: 3.5rem;
     margin-bottom: 1rem;
@@ -134,7 +452,6 @@ nav a:hover {
 }
 
 .btn {
-    padding: 1rem 2.5rem;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
@@ -305,10 +622,35 @@ body.mixer-body {
     align-items: center;
 }
 
+body > img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 25px;
+}
+
+.titulo-ficha {
+    margin: 30px 20px 25px;
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--accent-gold);
+}
+
+.titulo-cancion {
+    color: rgba(244, 244, 246, 0.72);
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    letter-spacing: 1px;
+    margin: 2rem 20px 0;
+    text-align: center;
+}
+
 .mixer-container,
 .contenedor {
     width: 100%;
     max-width: 400px;
+    margin-inline: auto;
+    box-sizing: border-box;
     background: #1e1e1e;
     padding: 25px;
     border-radius: 12px;
@@ -384,6 +726,12 @@ body.mixer-body {
         gap: 1rem;
     }
 
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
     .hero h1 {
         font-size: 2.2rem;
     }
@@ -391,5 +739,18 @@ body.mixer-body {
     .about {
         grid-template-columns: 1fr;
         gap: 2rem;
+    }
+
+    .selection-page {
+        padding: 3.5rem 7% 4rem;
+    }
+
+    .voice-grid,
+    .ficha-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .voice-card {
+        min-height: 240px;
     }
 }

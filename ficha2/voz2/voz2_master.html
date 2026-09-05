@@ -6,82 +6,23 @@
     <title>Mezclador Local - Multipista</title>
 
     <!-- Carga tu copia local de Howler Core -->
-    <script src="../howler.core.js"></script>
+    <script src="../../howler.core.js"></script>
 
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #121212;
-            color: #e0e0e0;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .contenedor {
-            width: 100%;
-            max-width: 400px;
-            background: #1e1e1e;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
-        h1 {
-            text-align: center;
-            font-size: 22px;
-            margin-bottom: 25px;
-            color: #00e5ff;
-        }
-        .controles-globales {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-        .btn-principal {
-            background: #00e5ff;
-            border: none;
-            color: #121212;
-            padding: 12px 35px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 25px;
-            transition: transform 0.2s ease;
-        }
-        .btn-principal:hover {
-            transform: scale(1.03);
-        }
-        .pista {
-            background: #282828;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-        }
-        .info-pista {
-            min-width: 80px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .fader-volumen {
-            flex-grow: 1;
-            accent-color: #00e5ff;
-            cursor: pointer;
-        }
-        .valor-volumen {
-            min-width: 35px;
-            text-align: right;
-            font-family: monospace;
-            font-size: 14px;
-            color: #aaaaaa;
-        }
-    </style>
+    <link rel="stylesheet" href="../../css.css">
+
 </head>
 <body>
+<nav>
+    <div class="logo">
+        <span>🎼</span> Ecos del Atlántico
+    </div>
+    <ul>
+        <li><a href="../../fichas_voz2.html">Fichas voz 2</a></li>
+        <li><a href="../../ayuda.html" class="help-link">AYUDA</a></li>
+    </ul>
+</nav>
 
+<img src="./particella_2_voz2.png">
 <div class="contenedor">
     <h1>Reproductor Multipista</h1>
 
@@ -99,9 +40,8 @@
 // 1. Configuración de tu archivo local uno.mp3
 // Si en el futuro añades más (dos.mp3, tres.mp3), solo agrégalos a esta lista
 const fuentesPistas = [
-    { id: 'metronomo', nombre: '🎵 Metrónomo', url: 'metronomo.mp3' },
-     { id: 'guitarra', nombre: '🎵 Guitarra', url: 'guitarra.mp3' },
-     { id: 'baritono', nombre: '🎵 Barítono', url: 'baritono.mp3' }
+     { id: 'guitarra', nombre: '🎵 Guitarra', url: '../guitarra2.mp3' },
+     { id: 'voz2', nombre: '🎵 voz2', url: './guia_2_voz_2.m4a' }
 ];
 
 const pistas = {};

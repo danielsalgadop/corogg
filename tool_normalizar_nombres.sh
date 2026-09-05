@@ -1,7 +1,28 @@
 #!/bin/bash
 
-# Verificar si se pasó un directorio; si no, usar el actual
-TARGET_DIR="${1:-.}"
+# Inicializar variable por defecto (falso significa que ejecuta los cambios reales)
+DRY_RUN=false
+TARGET_DIR="."
+
+# Procesar los argumentos pasados por comando
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -d|--dry-run)
+            DRY_RUN=true
+            shift # Mover al siguiente argumento
+            ;;
+        -*)
+            echo "Opción inválida: $1" >&2
+            echo "Uso: $0 [-d|--dry-run] [directorio]" >&2
+            exit 1
+            ;;
+        *)
+            # Si no empieza por "-", asumimos que es el directorio objetivo
+            TARGET_DIR="$1"
+            shift
+            ;;
+    esac
+done
 
 # Convertir la ruta del objetivo en una ruta absoluta completa
 TARGET_DIR=$(cd "$TARGET_DIR" && pwd)
@@ -10,6 +31,9 @@ TARGET_DIR=$(cd "$TARGET_DIR" && pwd)
 LOG_FILE=$(mktemp)
 CONTADOR=0
 
+if [ "$DRY_RUN" = true ]; then
+    echo "⚠️ MODO SIMULACIÓN ACTIVADO (No se aplicará ningún cambio real) ⚠️"
+fi
 echo "Iniciando normalización de nombres en: $TARGET_DIR"
 echo "--------------------------------------------------"
 
@@ -27,12 +51,9 @@ find "$TARGET_DIR" -depth -name ".*" -prune -o \( -name "* *" -o -name "*[áéí
 
     # Separar nombre y extensión (funciona incluso con extensiones compuestas como .tar.gz)
     if [[ "$base" == *.* ]] && [ -f "$elemento" ]; then
-        # Extraer la extensión (todo lo que va después del primer punto del final)
         ext=".${base#*.}"
-        # Extraer el nombre limpio sin extensión
         nombre_sin_ext="${base%%.*}"
     else
-        # Si es una carpeta o un archivo sin extensión
         ext=""
         nombre_sin_ext="$base"
     fi
@@ -45,21 +66,20 @@ find "$TARGET_DIR" -depth -name ".*" -prune -o \( -name "* *" -o -name "*[áéí
         -e 's/á/a/g' -e 's/é/e/g' -e 's/í/i/g' -e 's/ó/o/g' -e 's/ú/u/g' \
         -e 's/Á/A/g' -e 's/É/E/g' -e 's/Í/I/g' -e 's/Ó/O/g' -e 's/Ú/U/g')
 
-    # 3. Convertir solo el nombre a minúsculas (\L pasa a minúsculas el resto)
+    # 3. Convertir solo el nombre a minúsculas
     nuevo_nombre=$(echo "$nuevo_nombre" | sed 's/\(.*\)/\L\1/')
 
     # Volver a unir el nombre procesado con su extensión original intacta
     nuevo_base="${nuevo_nombre}${ext}"
 
-    # Renombrar si el nombre cambia y registrar el movimiento con ruta completa
+    # Si el nombre cambia, procedemos a simular o renombrar
     if [ "$base" != "$nuevo_base" ]; then
-        if mv "$elemento" "$dir/$nuevo_base" 2>/dev/null; then
+        if [ "$DRY_RUN" = true ] || mv "$elemento" "$dir/$nuevo_base" 2>/dev/null; then
             # Guardar en el archivo de registro usando la ruta completa
             echo "De: $elemento" >> "$LOG_FILE"
             echo "A:  $dir/$nuevo_base" >> "$LOG_FILE"
             echo "--------------------------------------------------" >> "$LOG_FILE"
             
-            # Incrementar el contador interno del subshell
             ((CONTADOR++))
             echo "$CONTADOR" > /tmp/script_count.tmp
         fi
@@ -72,11 +92,19 @@ rm -f /tmp/script_count.tmp
 
 # Mostrar el resumen final
 echo -e "\n=================================================="
-echo "                RESUMEN DE CAMBIOS                "
+if [ "$DRY_RUN" = true ]; then
+    echo "       RESUMEN DE CAMBIOS (SIMULADOS)             "
+else
+    echo "                RESUMEN DE CAMBIOS                "
+fi
 echo "=================================================="
 
 if [ "$TOTAL_CAMBIOS" -gt 0 ]; then
-    echo "Se han modificado un total de $TOTAL_CAMBIOS elemento(s):"
+    if [ "$DRY_RUN" = true ]; then
+        echo "Se habrían modificado un total de $TOTAL_CAMBIOS elemento(s):"
+    else
+        echo "Se han modificado un total de $TOTAL_CAMBIOS elemento(s):"
+    fi
     echo "--------------------------------------------------"
     cat "$LOG_FILE"
 else
