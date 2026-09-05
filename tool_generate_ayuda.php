@@ -13,15 +13,13 @@ declare(strict_types=1);
 $root = __DIR__;
 $inputPath = $root . '/ayuda.json';
 $outputPath = $root . '/ayuda.html';
-$force = false;
 
-foreach (array_slice($argv, 1) as $argument) {
-    if ($argument === '--force') {
-        $force = true;
-        continue;
-    }
+require_once $root . '/lib_code.php';
 
-    fwrite(STDERR, "Opcion no reconocida: {$argument}\n");
+try {
+    [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), []);
+} catch (InvalidArgumentException $exception) {
+    fwrite(STDERR, $exception->getMessage() . "\n");
     exit(1);
 }
 
@@ -44,20 +42,9 @@ try {
 
 validateHelpData($data);
 
-if (is_file($outputPath) && !$force) {
-    echo "Ya existe, no se modifica: {$outputPath}\n";
-    echo "Usa --force para regenerarlo.\n";
-    exit(0);
-}
-
 $html = createHelpPage($data);
 
-if (file_put_contents($outputPath, $html) === false) {
-    fwrite(STDERR, "No se pudo escribir {$outputPath}\n");
-    exit(1);
-}
-
-echo "Generado: {$outputPath}\n";
+LibCode::writeIfChanged($outputPath, $html, $force, false);
 
 function validateHelpData(mixed $data): void
 {
@@ -97,16 +84,16 @@ function validateHelpData(mixed $data): void
 
 function createHelpPage(array $data): string
 {
-    $title = escapeHtml($data['title']);
-    $intro = escapeHtml($data['intro']);
+    $title = LibCode::escape($data['title']);
+    $intro = LibCode::escape($data['intro']);
     $sections = '';
 
     foreach ($data['sections'] as $section) {
-        $number = escapeHtml((string) $section['number']);
-        $sectionTitle = escapeHtml($section['title']);
-        $text = escapeHtml($section['text']);
-        $videoUrl = escapeHtml($section['video']['url']);
-        $videoTitle = escapeHtml($section['video']['title']);
+        $number = LibCode::escape((string) $section['number']);
+        $sectionTitle = LibCode::escape($section['title']);
+        $text = LibCode::escape($section['text']);
+        $videoUrl = LibCode::escape($section['video']['url']);
+        $videoTitle = LibCode::escape($section['video']['title']);
 
         $sections .= <<<HTML
 
@@ -148,9 +135,4 @@ HTML;
 </body>
 </html>
 HTML;
-}
-
-function escapeHtml(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }

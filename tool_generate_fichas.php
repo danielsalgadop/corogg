@@ -26,41 +26,28 @@ declare(strict_types=1);
  */
 
 $root = __DIR__;
-$force = false;
-$dryRun = false;
-$songSlug = null;
-$requestedFicha = null;
-$requestedVoice = null;
 
-foreach (array_slice($argv, 1) as $argument) {
-    if ($argument === '--force') {
-        $force = true;
-        continue;
-    }
+require_once $root . '/lib_code.php';
 
-    if ($argument === '--dry-run') {
-        $dryRun = true;
-        continue;
-    }
+try {
+    [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), [
+        'dry-run' => 'bool',
+        'cancion' => 'value',
+        'ficha'   => 'value',
+        'voz'     => 'value',
+    ]);
 
-    if (preg_match('/^--cancion=([a-z0-9-]+)$/', $argument, $matches) === 1) {
-        $songSlug = $matches[1];
-        continue;
-    }
-
-    if (preg_match('/^--ficha=(\d+)$/', $argument, $matches) === 1) {
-        $requestedFicha = (int) $matches[1];
-        continue;
-    }
-
-    if (preg_match('/^--voz=(\d+)$/', $argument, $matches) === 1) {
-        $requestedVoice = (int) $matches[1];
-        continue;
-    }
-
-    fwrite(STDERR, "Opcion no reconocida: {$argument}\n");
+    $dryRun = LibCode::bool($args, 'dry-run');
+    $requestedFicha = LibCode::value($args, 'ficha', '/^\d+$/', 'Ficha');
+    $requestedVoice = LibCode::value($args, 'voz', '/^\d+$/', 'Voz');
+    $songSlug = LibCode::value($args, 'cancion', '/^[a-z0-9-]+$/', 'Cancion');
+} catch (InvalidArgumentException $exception) {
+    fwrite(STDERR, $exception->getMessage() . "\n");
     exit(1);
 }
+
+$requestedFicha = $requestedFicha === null ? null : (int) $requestedFicha;
+$requestedVoice = $requestedVoice === null ? null : (int) $requestedVoice;
 
 if ($requestedVoice !== null && $requestedFicha === null) {
     fwrite(STDERR, "--voz requiere tambien --ficha=N\n");
@@ -97,36 +84,25 @@ for ($fichaNumber = 1; $fichaNumber <= 6; $fichaNumber++) {
 
         $relativeGuitar = "../guitarra{$fichaNumber}.mp3";
         $relativeGuide = $guideName === null ? '' : './' . $guideName;
+        $prevFicha = $fichaNumber > 1 ? $fichaNumber - 1 : null;
+        $nextFicha = $fichaNumber < 6 ? $fichaNumber + 1 : null;
+
         $html = createVoicePage(
             $fichaNumber,
             $voiceNumber,
             $particella,
             $relativeGuitar,
-            $relativeGuide
+            $relativeGuide,
+            $prevFicha,
+            $nextFicha
         );
 
-        if (is_file($outputPath) && !$force) {
-            echo "Ya existe, no se modifica: {$outputPath}\n";
-            $skipped++;
-            continue;
-        }
-
-        if ($dryRun) {
-            echo "Se generaria: {$outputPath}\n";
+        $result = LibCode::writeIfChanged($outputPath, $html, $force, $dryRun);
+        if ($result === 'generated') {
             $generated++;
-            continue;
+        } elseif ($result === 'skipped') {
+            $skipped++;
         }
-
-        if (!is_dir($voiceDirectory) && !mkdir($voiceDirectory, 0775, true) && !is_dir($voiceDirectory)) {
-            throw new RuntimeException("No se pudo crear {$voiceDirectory}");
-        }
-
-        if (file_put_contents($outputPath, $html) === false) {
-            throw new RuntimeException("No se pudo escribir {$outputPath}");
-        }
-
-        echo "Generado: {$outputPath}\n";
-        $generated++;
     }
 }
 
@@ -142,11 +118,14 @@ function createVoicePage(
     int $voiceNumber,
     ?string $particella,
     string $guitarPath,
-    string $voicePath
+    string $voicePath,
+    ?int $prevFicha,
+    ?int $nextFicha
 ): string {
     $songTitle = "Can't Help Falling in Love";
     $voiceLabel = "voz{$voiceNumber}";
     $particellaMarkup = createParticellaMarkup($particella);
+    $navMarkup = createFichaNav($fichaNumber, $voiceNumber, $prevFicha, $nextFicha);
     $guideTrack = $voicePath === ''
         ? ''
         : "    { id: '{$voiceLabel}', nombre: '🎵 {$voiceLabel}', url: '{$voicePath}' }";
@@ -169,13 +148,15 @@ function createVoicePage(
         <span>🎼</span> Ecos del Atlántico
     </a>
     <ul>
+        <li><a href="../../voces.html">Elegir voz</a></li>
         <li><a href="../../../../ayuda.html" class="help-link">AYUDA</a></li>
     </ul>
 </nav>
 
-<p class="selection-kicker">{$songTitle}</p>
+<p class="selection-kicker"><span class="nota-musical">♫</span> {$songTitle} <span class="nota-musical">♫</span></p>
 <h1 class="titulo-ficha">Ficha{$fichaNumber} {$voiceLabel}</h1>
 
+{$navMarkup}
 {$particellaMarkup}
 <div class="contenedor">
     <h1>Reproductor Multipista</h1>
@@ -341,4 +322,27 @@ function createParticellaMarkup(?string $particella): string
     <a href="{$safeUrl}">Abrir particella {$safeName}</a>
 </object>
 HTML;
+}
+
+function createFichaNav(
+    int $fichaNumber,
+    int $voiceNumber,
+    ?int $prevFicha,
+    ?int $nextFicha
+): string {
+    $voiceLabel = "voz{$voiceNumber}";
+
+    if ($prevFicha !== null) {
+        $prevLink = "<a href=\"../../ficha{$prevFicha}/{$voiceLabel}/{$voiceLabel}.html\">← Ficha {$prevFicha}</a>";
+    } else {
+        $prevLink = '<span class="nav-placeholder"></span>';
+    }
+
+    if ($nextFicha !== null) {
+        $nextLink = "<a href=\"../../ficha{$nextFicha}/{$voiceLabel}/{$voiceLabel}.html\">Ficha {$nextFicha} →</a>";
+    } else {
+        $nextLink = '<span class="nav-placeholder"></span>';
+    }
+
+    return "<nav class=\"ficha-nav\">{$prevLink}{$nextLink}</nav>";
 }
