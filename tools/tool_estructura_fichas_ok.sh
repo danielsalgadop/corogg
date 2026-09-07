@@ -2,6 +2,8 @@
 
 set -uo pipefail
 
+cd "$(dirname "$0")/.." || exit 1
+
 overall_status=0
 song_slug="${1:-}"
 

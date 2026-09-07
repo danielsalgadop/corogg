@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")/.." || exit 1
+
 # Busca recursivamente carpetas ficha dentro de cada cancion en songs
 find songs -mindepth 2 -type d -name "ficha*" | while read -r carpeta; do
     echo "Procesando carpeta: $carpeta"

@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 /**
- * Genera ayuda.html a partir de ayuda.json.
+ * Genera ayuda.html a partir de config/ayuda.json.
  *
  * Uso:
  *   php tool_generate_ayuda.php
  *   php tool_generate_ayuda.php --force
  */
 
-$root = __DIR__;
-$inputPath = $root . '/ayuda.json';
+$root = dirname(__DIR__);
+$inputPath = $root . '/config/ayuda.json';
 $outputPath = $root . '/ayuda.html';
 
 require_once $root . '/lib_code.php';

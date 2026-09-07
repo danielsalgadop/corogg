@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")/.." || exit 1
+
 # Inicializar variable por defecto (falso significa que ejecuta los cambios reales)
 DRY_RUN=false
 TARGET_DIR="."

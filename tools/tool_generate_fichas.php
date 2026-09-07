@@ -25,7 +25,7 @@ declare(strict_types=1);
  *   php tool_generate_fichas.php --dry-run
  */
 
-$root = __DIR__;
+$root = dirname(__DIR__);
 
 require_once $root . '/lib_code.php';
 
