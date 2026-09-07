@@ -1,12 +1,17 @@
 {
-  "site_title": "Ecos del Atlantico",
+  "site_title": "Ecos del Atlántico",
   "tagline": "Una familia, muchas voces - One family, many voices",
+  "repertorio": {
+    "title": "Repertorio",
+    "subtitle": "Elige una canción para encontrar sus voces y fichas de estudio."
+  },
   "songs": [
     {
       "slug": "cant-help-falling-in-love",
       "title": "Can't Help Falling in Love with You",
       "folder": "songs/cant-help-falling-in-love",
       "total_fichas": 6,
+      "partitura": "songs/cant-help-falling-in-love/cant-help-falling-in-love.pdf",
       "guitarras": {
         "1": null,
         "2": "songs/cant-help-falling-in-love/ficha2/guitarra2.mp3",
