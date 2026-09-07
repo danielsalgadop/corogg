@@ -726,9 +726,8 @@ body > img {
 }
 
 .ficha-nav {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
     max-width: 400px;
     margin: 2rem auto 0;
@@ -752,6 +751,14 @@ body > img {
     transition: border-color 0.3s, background 0.3s, color 0.3s;
 }
 
+.ficha-nav a:first-child {
+    justify-content: flex-start;
+}
+
+.ficha-nav a:nth-child(2) {
+    justify-content: flex-end;
+}
+
 .ficha-nav a:hover {
     border-color: var(--accent-gold);
     background: rgba(223,183,108,0.1);
@@ -760,6 +767,13 @@ body > img {
 
 .ficha-nav .nav-placeholder {
     width: 1px;
+}
+
+.ficha-nav .nav-arrow {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent-gold);
 }
 
 @media (max-width: 768px) {

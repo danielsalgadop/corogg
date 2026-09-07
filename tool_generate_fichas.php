@@ -12,7 +12,7 @@ declare(strict_types=1);
  *     particella_N_vozV.(png|pdf)
  *     vozV.html
  *
- * Genera 6 fichas y 3 voces por ficha. Los recursos esperados son:
+ * Genera {$totalFichas} fichas y {$totalVoces} voces por ficha. Los recursos esperados son:
  *   songs/cancion/fichaN/guitarraN.mp3
  *   songs/cancion/fichaN/vozV/guia_N_voz_V.m4a
  *   songs/cancion/fichaN/vozV/particella_N_vozV.(png|pdf)
@@ -28,6 +28,16 @@ declare(strict_types=1);
 $root = __DIR__;
 
 require_once $root . '/lib_code.php';
+
+$configPath = $root . '/config/app.json';
+if (!is_file($configPath)) {
+    fwrite(STDERR, "No existe la configuracion: {$configPath}\n");
+    exit(1);
+}
+
+$config = json_decode(file_get_contents($configPath), true);
+$totalFichas = $config['total_fichas'] ?? 6;
+$totalVoces = $config['total_voces'] ?? 3;
 
 try {
     [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), [
@@ -67,12 +77,12 @@ if (!is_dir($songRoot)) {
     exit(1);
 }
 
-for ($fichaNumber = 1; $fichaNumber <= 6; $fichaNumber++) {
+for ($fichaNumber = 1; $fichaNumber <= $totalFichas; $fichaNumber++) {
     if ($requestedFicha !== null && $requestedFicha !== $fichaNumber) {
         continue;
     }
 
-    for ($voiceNumber = 1; $voiceNumber <= 3; $voiceNumber++) {
+    for ($voiceNumber = 1; $voiceNumber <= $totalVoces; $voiceNumber++) {
         if ($requestedVoice !== null && $requestedVoice !== $voiceNumber) {
             continue;
         }
@@ -85,11 +95,12 @@ for ($fichaNumber = 1; $fichaNumber <= 6; $fichaNumber++) {
         $relativeGuitar = "../guitarra{$fichaNumber}.mp3";
         $relativeGuide = $guideName === null ? '' : './' . $guideName;
         $prevFicha = $fichaNumber > 1 ? $fichaNumber - 1 : null;
-        $nextFicha = $fichaNumber < 6 ? $fichaNumber + 1 : null;
+        $nextFicha = $fichaNumber < $totalFichas ? $fichaNumber + 1 : null;
 
         $html = createVoicePage(
             $fichaNumber,
             $voiceNumber,
+            $totalFichas,
             $particella,
             $relativeGuitar,
             $relativeGuide,
@@ -116,6 +127,7 @@ echo "Finalizado: {$generated} generado(s), {$skipped} conservado(s).\n";
 function createVoicePage(
     int $fichaNumber,
     int $voiceNumber,
+    int $totalFichas,
     ?string $particella,
     string $guitarPath,
     string $voicePath,
@@ -137,7 +149,7 @@ function createVoicePage(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{$songTitle} - Ficha{$fichaNumber} {$voiceLabel}</title>
+    <title>{$songTitle} - Ficha{$fichaNumber}/{$totalFichas} {$voiceLabel}</title>
 
     <script src="../../../../howler.core.js"></script>
     <link rel="stylesheet" href="../../../../css.css">
@@ -154,7 +166,7 @@ function createVoicePage(
 </nav>
 
 <p class="selection-kicker"><span class="nota-musical">♫</span> {$songTitle} <span class="nota-musical">♫</span></p>
-<h1 class="titulo-ficha">Ficha{$fichaNumber} {$voiceLabel}</h1>
+<h1 class="titulo-ficha">Ficha{$fichaNumber}/{$totalFichas} {$voiceLabel}</h1>
 
 {$navMarkup}
 {$particellaMarkup}
@@ -333,13 +345,13 @@ function createFichaNav(
     $voiceLabel = "voz{$voiceNumber}";
 
     if ($prevFicha !== null) {
-        $prevLink = "<a href=\"../../ficha{$prevFicha}/{$voiceLabel}/{$voiceLabel}.html\">← Ficha {$prevFicha}</a>";
+        $prevLink = "<a href=\"../../ficha{$prevFicha}/{$voiceLabel}/{$voiceLabel}.html\"><span class=\"nav-arrow\">&lt;</span> Anterior</a>";
     } else {
         $prevLink = '<span class="nav-placeholder"></span>';
     }
 
     if ($nextFicha !== null) {
-        $nextLink = "<a href=\"../../ficha{$nextFicha}/{$voiceLabel}/{$voiceLabel}.html\">Ficha {$nextFicha} →</a>";
+        $nextLink = "<a href=\"../../ficha{$nextFicha}/{$voiceLabel}/{$voiceLabel}.html\">Siguiente <span class=\"nav-arrow\">&gt;</span></a>";
     } else {
         $nextLink = '<span class="nav-placeholder"></span>';
     }
