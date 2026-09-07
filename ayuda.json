@@ -1,0 +1,60 @@
+{
+  "title": "Ayuda",
+  "intro": "Una guía breve para encontrar tu voz, preparar tu parte y compartir tu grabación.",
+  "sections": [
+    {
+      "number": 1,
+      "title": "¿Qué voz soy?",
+      "text": "Escucha las muestras de cada voz y elige la que te resulte más cómoda. Si dudas entre dos opciones, empieza por la que puedas cantar sin forzar y consulta al director.",
+      "video": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "title": "Cómo identificar tu voz"
+      }
+    },
+    {
+      "number": 2,
+      "title": "Las fichas",
+      "text": "Cada ficha corresponde a una parte de la canción. Abre la ficha de tu voz para consultar la particella y escuchar la guitarra junto con la guía vocal.",
+      "video": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "title": "Cómo usar las fichas"
+      }
+    },
+    {
+      "number": 3,
+      "title": "Las voces y sus fichas",
+      "text": "Desde la página de voces puedes entrar en Voz 1, Voz 2 o Voz 3. Después selecciona las fichas en orden para avanzar por la canción sin perderte.",
+      "video": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "title": "Voces y fichas"
+      }
+    },
+    {
+      "number": 4,
+      "title": "¿Cómo preparar y aprender mi voz?",
+      "text": "Escucha primero la guía vocal, localiza tus entradas y practica cada frase por separado. Luego repite con la guitarra y aumenta el volumen de tu voz poco a poco.",
+      "video": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "title": "Cómo aprender tu voz"
+      }
+    },
+    {
+      "number": 5,
+      "title": "¿Cómo lo grabo?",
+      "text": "Busca una habitación tranquila y coloca el móvil a una distancia fija. Haz una prueba corta, comprueba que la voz se entiende y graba la toma completa sin mover el dispositivo.",
+      "video": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "title": "Cómo grabar tu voz"
+      }
+    },
+    {
+      "number": 6,
+      "title": "¿Cómo lo envío?",
+      "text": "Escucha el archivo antes de enviarlo y ponle un nombre claro, por ejemplo `voz2_ficha3_nombre.m4a`. Después compártelo por el canal que haya indicado el equipo.",
+      "video": {
+        "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "title": "Cómo enviar tu grabación"
+      }
+    }
+  ]
+}

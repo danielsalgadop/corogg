@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * Genera las paginas de voz para fichas con el formato:
  *
- * fichaN/
+ * songs/cancion/fichaN/
  *   guitarraN.mp3
  *   vozV/
  *     guia_N_voz_V.m4a
@@ -13,13 +13,14 @@ declare(strict_types=1);
  *     vozV.html
  *
  * Genera 6 fichas y 3 voces por ficha. Los recursos esperados son:
- *   fichaN/guitarraN.mp3
- *   fichaN/vozV/guia_N_voz_V.m4a
- *   fichaN/vozV/particella_N_vozV.(png|pdf)
+ *   songs/cancion/fichaN/guitarraN.mp3
+ *   songs/cancion/fichaN/vozV/guia_N_voz_V.m4a
+ *   songs/cancion/fichaN/vozV/particella_N_vozV.(png|pdf)
  *
  * Uso:
  *   php tool_generate_fichas.php
  *   php tool_generate_fichas.php --ficha=3 --voz=2
+ *   php tool_generate_fichas.php --cancion=cant-help-falling-in-love
  *   php tool_generate_fichas.php --force
  *   php tool_generate_fichas.php --dry-run
  */
@@ -27,6 +28,7 @@ declare(strict_types=1);
 $root = __DIR__;
 $force = false;
 $dryRun = false;
+$songSlug = null;
 $requestedFicha = null;
 $requestedVoice = null;
 
@@ -38,6 +40,11 @@ foreach (array_slice($argv, 1) as $argument) {
 
     if ($argument === '--dry-run') {
         $dryRun = true;
+        continue;
+    }
+
+    if (preg_match('/^--cancion=([a-z0-9-]+)$/', $argument, $matches) === 1) {
+        $songSlug = $matches[1];
         continue;
     }
 
@@ -60,8 +67,18 @@ if ($requestedVoice !== null && $requestedFicha === null) {
     exit(1);
 }
 
+if ($songSlug === null) {
+    $songSlug = selectSongSlug($root . '/songs');
+}
+
 $generated = 0;
 $skipped = 0;
+$songRoot = $root . '/songs/' . $songSlug;
+
+if (!is_dir($songRoot)) {
+    fwrite(STDERR, "No existe la carpeta de la cancion: {$songRoot}\n");
+    exit(1);
+}
 
 for ($fichaNumber = 1; $fichaNumber <= 6; $fichaNumber++) {
     if ($requestedFicha !== null && $requestedFicha !== $fichaNumber) {
@@ -73,7 +90,7 @@ for ($fichaNumber = 1; $fichaNumber <= 6; $fichaNumber++) {
             continue;
         }
 
-        $voiceDirectory = $root . "/ficha{$fichaNumber}/voz{$voiceNumber}";
+        $voiceDirectory = $songRoot . "/ficha{$fichaNumber}/voz{$voiceNumber}";
         $particella = findParticella($voiceDirectory, $fichaNumber, $voiceNumber);
         $guideName = findGuide($voiceDirectory, $fichaNumber, $voiceNumber);
         $outputPath = $voiceDirectory . "/voz{$voiceNumber}.html";
@@ -143,16 +160,16 @@ function createVoicePage(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$songTitle} - Ficha{$fichaNumber} {$voiceLabel}</title>
 
-    <script src="../../howler.core.js"></script>
-    <link rel="stylesheet" href="../../css.css">
+    <script src="../../../../howler.core.js"></script>
+    <link rel="stylesheet" href="../../../../css.css">
 </head>
 <body>
 <nav>
-    <a href="../../index.html" class="logo">
+    <a href="../../../../index.html" class="logo">
         <span>🎼</span> Ecos del Atlántico
     </a>
     <ul>
-        <li><a href="../../ayuda.html" class="help-link">AYUDA</a></li>
+        <li><a href="../../../../ayuda.html" class="help-link">AYUDA</a></li>
     </ul>
 </nav>
 
@@ -240,6 +257,34 @@ btnReproductor.addEventListener('click', () => {
 </body>
 </html>
 HTML;
+}
+
+function selectSongSlug(string $songsRoot): string
+{
+    $songDirectories = glob($songsRoot . '/*', GLOB_ONLYDIR) ?: [];
+    sort($songDirectories, SORT_NATURAL | SORT_FLAG_CASE);
+
+    if ($songDirectories === []) {
+        fwrite(STDERR, "No hay carpetas de canciones en {$songsRoot}\n");
+        exit(1);
+    }
+
+    echo "Selecciona la cancion para generar sus fichas:\n";
+    foreach ($songDirectories as $index => $directory) {
+        printf("  %d) %s\n", $index + 1, basename($directory));
+    }
+    echo "Numero: ";
+
+    $answer = fgets(STDIN);
+    $selection = $answer === false ? 0 : (int) trim($answer);
+    $selectedIndex = $selection - 1;
+
+    if ($selection < 1 || !isset($songDirectories[$selectedIndex])) {
+        fwrite(STDERR, "Seleccion no valida. Usa uno de los numeros mostrados.\n");
+        exit(1);
+    }
+
+    return basename($songDirectories[$selectedIndex]);
 }
 
 function findParticella(string $voiceDirectory, int $fichaNumber, int $voiceNumber): ?string

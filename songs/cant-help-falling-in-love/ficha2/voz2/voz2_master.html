@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mezclador Local - Multipista</title>
+
+    <!-- Carga tu copia local de Howler Core -->
+    <script src="../../../../howler.core.js"></script>
+
+    <link rel="stylesheet" href="../../../../css.css">
+
+</head>
+<body>
+<nav>
+    <div class="logo">
+        <span>🎼</span> Ecos del Atlántico
+    </div>
+    <ul>
+        <li><a href="../../../fichas_voz2.html">Fichas voz 2</a></li>
+        <li><a href="../../../../ayuda.html" class="help-link">AYUDA</a></li>
+    </ul>
+</nav>
+
+<img src="./particella_2_voz2.png">
+<div class="contenedor">
+    <h1>Reproductor Multipista</h1>
+
+    <div class="controles-globales">
+        <!-- El botón está listo desde el inicio al ser archivos locales sin streaming -->
+        <button id="btn-reproductor" class="btn-principal">▶ Reproducir Todo</button>
+    </div>
+
+    <div id="mezclador-pistas">
+        <!-- La pista uno.mp3 se generará aquí -->
+    </div>
+</div>
+
+<script>
+// 1. Configuración de tu archivo local uno.mp3
+// Si en el futuro añades más (dos.mp3, tres.mp3), solo agrégalos a esta lista
+const fuentesPistas = [
+     { id: 'guitarra', nombre: '🎵 Guitarra', url: '../guitarra2.mp3' },
+     { id: 'voz2', nombre: '🎵 voz2', url: './guia_2_voz_2.m4a' }
+];
+
+const pistas = {};
+let enReproduccion = false;
+
+const btnReproductor = document.getElementById('btn-reproductor');
+const contenedorPistas = document.getElementById('mezclador-pistas');
+
+// 2. Inicializar Howler apuntando a la carpeta local
+fuentesPistas.forEach(pistaInfo => {
+    pistas[pistaInfo.id] = new Howl({
+        src: [pistaInfo.url],
+        loop: true,        // Se repite en bucle al terminar
+        volume: 0.7        // Arranca al 70% de volumen
+    });
+
+    // Construir los sliders en el HTML
+    crearFaderInterfaz(pistaInfo);
+});
+
+// 3. Crear el control deslizante para la pista
+function crearFaderInterfaz(pistaInfo) {
+    const divPista = document.createElement('div');
+    divPista.className = 'pista';
+
+    const info = document.createElement('div');
+    info.className = 'info-pista';
+    info.textContent = pistaInfo.nombre;
+
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.className = 'fader-volumen';
+    input.min = '0';
+    input.max = '1';
+    input.step = '0.01';
+    input.value = '0.7';
+
+    const valorTxt = document.createElement('div');
+    valorTxt.className = 'valor-volumen';
+    valorTxt.textContent = '70%';
+
+    // Escuchar el movimiento del slider para cambiar el volumen
+    input.addEventListener('input', (e) => {
+        const volumen = parseFloat(e.target.value);
+        pistas[pistaInfo.id].volume(volumen); // Comando nativo de Howler
+        valorTxt.textContent = Math.round(volumen * 100) + '%';
+    });
+
+    divPista.appendChild(info);
+    divPista.appendChild(input);
+    divPista.appendChild(valorTxt);
+    contenedorPistas.appendChild(divPista);
+}
+
+// 4. Lógica del botón de Play / Pause global
+btnReproductor.addEventListener('click', () => {
+    if (!enReproduccion) {
+        // Da play a todos los objetos Howl del diccionario
+        Object.keys(pistas).forEach(id => pistas[id].play());
+        btnReproductor.textContent = '⏸ Pausar Todo';
+        btnReproductor.style.background = '#ff007f';
+        enReproduccion = true;
+    } else {
+        // Pausa todos los objetos Howl
+        Object.keys(pistas).forEach(id => pistas[id].pause());
+        btnReproductor.textContent = '▶ Reproducir Todo';
+        btnReproductor.style.background = '#00e5ff';
+        enReproduccion = false;
+    }
+});
+</script>
+
+</body>
+</html>

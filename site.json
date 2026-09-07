@@ -5,11 +5,12 @@
     {
       "slug": "cant-help-falling-in-love",
       "title": "Can't Help Falling in Love with You",
+      "folder": "songs/cant-help-falling-in-love",
       "voices": [
         {
           "slug": "voz1",
           "label": "Voz 1",
-          "folder": "ficha1_3",
+          "folder": "songs/cant-help-falling-in-love/ficha1_3",
           "image": "voz1.png",
           "tracks": [
             { "label": "Metrónomo", "file": "metronomo.mp3" },
@@ -20,7 +21,7 @@
         {
           "slug": "baritono",
           "label": "Barítono",
-          "folder": "ficha1_3",
+          "folder": "songs/cant-help-falling-in-love/ficha1_3",
           "image": "baritono.png",
           "tracks": [
             { "label": "Metrónomo", "file": "metronomo.mp3" },

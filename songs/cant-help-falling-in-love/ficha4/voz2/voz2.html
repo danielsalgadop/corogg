@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can't Help Falling in Love - Ficha4 voz2</title>
+
+    <script src="../../../../howler.core.js"></script>
+    <link rel="stylesheet" href="../../../../css.css">
+</head>
+<body>
+<nav>
+    <a href="../../../../index.html" class="logo">
+        <span>🎼</span> Ecos del Atlántico
+    </a>
+    <ul>
+        <li><a href="../../../../ayuda.html" class="help-link">AYUDA</a></li>
+    </ul>
+</nav>
+
+<p class="selection-kicker">Can't Help Falling in Love</p>
+<h1 class="titulo-ficha">Ficha4 voz2</h1>
+
+<img src="./particella_4_voz2.png" alt="Particella">
+<div class="contenedor">
+    <h1>Reproductor Multipista</h1>
+
+    <div class="controles-globales">
+        <button id="btn-reproductor" class="btn-principal">▶ Reproducir Todo</button>
+    </div>
+
+    <div id="mezclador-pistas"></div>
+</div>
+
+<script>
+const fuentesPistas = [
+    { id: 'guitarra', nombre: '🎵 Guitarra', url: '../guitarra4.mp3' }
+];
+
+const pistas = {};
+let enReproduccion = false;
+
+const btnReproductor = document.getElementById('btn-reproductor');
+const contenedorPistas = document.getElementById('mezclador-pistas');
+
+fuentesPistas.forEach(pistaInfo => {
+    pistas[pistaInfo.id] = new Howl({
+        src: [pistaInfo.url],
+        loop: true,
+        volume: 0.7
+    });
+
+    crearFaderInterfaz(pistaInfo);
+});
+
+function crearFaderInterfaz(pistaInfo) {
+    const divPista = document.createElement('div');
+    divPista.className = 'pista';
+
+    const info = document.createElement('div');
+    info.className = 'info-pista';
+    info.textContent = pistaInfo.nombre;
+
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.className = 'fader-volumen';
+    input.min = '0';
+    input.max = '1';
+    input.step = '0.01';
+    input.value = '0.7';
+
+    const valorTxt = document.createElement('div');
+    valorTxt.className = 'valor-volumen';
+    valorTxt.textContent = '70%';
+
+    input.addEventListener('input', (e) => {
+        const volumen = parseFloat(e.target.value);
+        pistas[pistaInfo.id].volume(volumen);
+        valorTxt.textContent = Math.round(volumen * 100) + '%';
+    });
+
+    divPista.appendChild(info);
+    divPista.appendChild(input);
+    divPista.appendChild(valorTxt);
+    contenedorPistas.appendChild(divPista);
+}
+
+btnReproductor.addEventListener('click', () => {
+    if (!enReproduccion) {
+        Object.keys(pistas).forEach(id => pistas[id].play());
+        btnReproductor.textContent = '⏸ Pausar Todo';
+        btnReproductor.style.background = '#ff007f';
+        enReproduccion = true;
+    } else {
+        Object.keys(pistas).forEach(id => pistas[id].pause());
+        btnReproductor.textContent = '▶ Reproducir Todo';
+        btnReproductor.style.background = '#00e5ff';
+        enReproduccion = false;
+    }
+});
+</script>
+</body>
+</html>

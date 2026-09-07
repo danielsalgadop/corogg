@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Busca recursivamente carpetas que empiecen por "ficha"
-# y encuentra todos los archivos .pdf dentro de ellas
-find . -type d -name "ficha*" | while read -r carpeta; do
+# Busca recursivamente carpetas ficha dentro de cada cancion en songs
+find songs -mindepth 2 -type d -name "ficha*" | while read -r carpeta; do
     echo "Procesando carpeta: $carpeta"
     
     # Busca los PDFs dentro de la carpeta encontrada
