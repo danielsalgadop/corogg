@@ -727,9 +727,9 @@ body > img {
 
 .ficha-nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     max-width: 400px;
     margin: 2rem auto 0;
     padding: 0 20px;
