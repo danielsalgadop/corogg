@@ -93,6 +93,18 @@ function playScale(low, high){
   step();
 }
 function stopScale(){ if(scaleTimer){clearTimeout(scaleTimer); scaleTimer=null;} }
+function playNotes(notes){
+  stopScale();
+  let i=0;
+  const step=()=>{
+    playTone(notes[i], 1.8);
+    highlightKey(notes[i]);
+    showNow(notes[i]);
+    i++;
+    if(i<notes.length) scaleTimer=setTimeout(step, 1300);
+  };
+  step();
+}
 
 // --- Render tarjetas ---
 const grid = document.getElementById('voice-grid');
@@ -109,13 +121,17 @@ VOICES.forEach(v=>{
       <button class="chip" data-a="low">▶ Grave</button>
       <button class="chip" data-a="mid">▶ Centro</button>
       <button class="chip" data-a="high">▶ Agudo</button>
+    </div>
+    <div class="play-row">
+      <button class="chip three" data-a="three">▶ Oír los 3</button>
     </div>`;
   el.querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{
       const a=b.dataset.a;
-      if(a==='low'){playTone(v.low);showNow(v.low);}
-      if(a==='mid'){playTone(mid);showNow(mid);}
-      if(a==='high'){playTone(v.high);showNow(v.high);}
+      if(a==='low'){stopScale();playTone(v.low);showNow(v.low);}
+      if(a==='mid'){stopScale();playTone(mid);showNow(mid);}
+      if(a==='high'){stopScale();playTone(v.high);showNow(v.high);}
+      if(a==='three'){playNotes([v.low,mid,v.high]);}
     };
   });
   grid.appendChild(el);

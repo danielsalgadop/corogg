@@ -45,7 +45,8 @@ h2{margin:44px 0 8px;font-size:1.6rem;color:var(--accent-gold)}
 .card .range strong{color:var(--accent)}
 .card p.desc{color:var(--muted);font-size:.95rem;min-height:3.2em}
 .card .freq{font-size:.85rem;color:var(--muted);margin-bottom:12px}
-.card .play-row{display:flex;flex-wrap:wrap;gap:8px}
+.card .play-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip.three{flex:1 1 100%;width:100%;text-align:center;font-weight:700}
 .chip{background:rgba(255,255,255,.06);border:1px solid rgba(223,183,108,.3);color:var(--text);border-radius:8px;padding:8px 10px;font-size:.88rem;cursor:pointer}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip.scale{background:var(--accent);border-color:var(--accent);color:#121212;font-weight:700}
