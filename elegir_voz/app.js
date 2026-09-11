@@ -128,9 +128,9 @@ VOICES.forEach(v=>{
   el.querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{
       const a=b.dataset.a;
-      if(a==='low'){stopScale();playTone(v.low);showNow(v.low);}
-      if(a==='mid'){stopScale();playTone(mid);showNow(mid);}
-      if(a==='high'){stopScale();playTone(v.high);showNow(v.high);}
+      if(a==='low'){stopScale();playTone(v.low);showNow(v.low);highlightKey(v.low);}
+      if(a==='mid'){stopScale();playTone(mid);showNow(mid);highlightKey(mid);}
+      if(a==='high'){stopScale();playTone(v.high);showNow(v.high);highlightKey(v.high);}
       if(a==='three'){playNotes([v.low,mid,v.high]);}
     };
   });
