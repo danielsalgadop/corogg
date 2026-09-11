@@ -15,15 +15,12 @@ nav ul{display:flex;list-style:none;gap:2rem}
 nav a{color:var(--text-light);text-decoration:none;font-size:.9rem;text-transform:uppercase;letter-spacing:1px;transition:color .3s}
 nav a:hover{color:var(--accent-gold)}
 .container{max-width:1100px;margin:0 auto;padding:0 20px}
-.hero{min-height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3rem 2rem;position:relative;background:radial-gradient(circle,rgba(27,38,59,.4) 0%,rgba(11,15,26,1) 100%)}
-.hero::before{content:"🎼";font-size:8rem;position:absolute;opacity:.08;color:var(--accent-gold);top:8%}
-.hero .container{position:relative;z-index:1}
-.badge{display:inline-block;background:transparent;border:1px solid rgba(223,183,108,.4);padding:6px 12px;font-size:.85rem;color:var(--muted);letter-spacing:1px}
-h1{font-size:clamp(2rem,5vw,3.2rem);margin:.6em 0 .2em;line-height:1.1;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.5)}
-.flag-divider{display:flex;height:4px;width:150px;margin:1.5rem auto;border-radius:2px;overflow:hidden}
-.flag-es{background:var(--spain-red);flex:1}
-.flag-us{background:var(--usa-blue);flex:1}
-.subtitle{color:var(--muted);max-width:600px;font-size:1.2rem;font-weight:300;margin:0 auto}
+.selection-top{position:relative;padding:5rem 10% 3rem;text-align:center}
+.selection-top::before{color:rgba(223,183,108,.08);content:"♫";font-family:serif;font-size:15rem;line-height:1;position:absolute;right:5%;top:4%;z-index:-1}
+.selection-top .container{position:relative;z-index:1;max-width:700px}
+.selection-kicker{color:#f4f4f6;font-size:.8rem;font-weight:700;letter-spacing:3px;margin-bottom:1rem;text-align:center;text-transform:uppercase}
+.selection-top h1{color:#fff;font-size:clamp(2.2rem,6vw,4.2rem);line-height:1.1;margin-bottom:1.25rem}
+.subtitle{color:rgba(244,244,246,.72);font-size:1.05rem;margin:0 auto}
 .hero-actions{margin:20px 0;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .btn{font-family:'Montserrat',sans-serif;font-size:.9rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;border:2px solid var(--accent-gold);background:transparent;color:var(--accent-gold);cursor:pointer;transition:all .4s ease;text-decoration:none;display:inline-block;border-radius:0;padding:12px 20px}
 .btn:hover{background:var(--accent-gold);color:var(--primary-dark);box-shadow:0 0 20px rgba(223,183,108,.4)}
