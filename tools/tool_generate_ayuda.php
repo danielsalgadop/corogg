@@ -79,6 +79,17 @@ function validateHelpData(mixed $data): void
             || !is_string($section['video']['title'])) {
             throw new InvalidArgumentException("El video de la seccion {$index} tiene un formato invalido.");
         }
+
+        if (isset($section['cta'])) {
+            if (!is_array($section['cta'])
+                || !isset($section['cta']['label'], $section['cta']['href'])
+                || !is_string($section['cta']['label'])
+                || !is_string($section['cta']['href'])
+                || $section['cta']['label'] === ''
+                || $section['cta']['href'] === '') {
+                throw new InvalidArgumentException("El cta de la seccion {$index} tiene un formato invalido.");
+            }
+        }
     }
 }
 
@@ -94,13 +105,23 @@ function createHelpPage(array $data): string
         $text = LibCode::escape($section['text']);
         $videoUrl = LibCode::escape($section['video']['url']);
         $videoTitle = LibCode::escape($section['video']['title']);
+        $ctaHtml = '';
+        if (isset($section['cta'])) {
+            $ctaLabel = LibCode::escape($section['cta']['label']);
+            $ctaHref = LibCode::escape($section['cta']['href']);
+            $ctaHtml = <<<HTML
+            <div style="margin-top:1rem;">
+                <a href="{$ctaHref}" class="btn-principal" style="display:inline-block;text-decoration:none;">{$ctaLabel}</a>
+            </div>
+HTML;
+        }
 
         $sections .= <<<HTML
 
 
         <section class="help-section">
             <h2>{$number}. {$sectionTitle}</h2>
-            <p>{$text}</p>
+            <p>{$text}</p>{$ctaHtml}
             <div class="help-video">
                 <div class="video-frame">
                     <iframe src="{$videoUrl}" title="{$videoTitle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

@@ -6,6 +6,10 @@
       "number": 1,
       "title": "¿Qué voz soy?",
       "text": "Escucha las muestras de cada voz y elige la que te resulte más cómoda. Si dudas entre dos opciones, empieza por la que puedas cantar sin forzar y consulta al director.",
+      "cta": {
+        "label": "🎤 Descubrir mi voz",
+        "href": "elegir_voz/index.html"
+      },
       "video": {
         "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
         "title": "Cómo identificar tu voz"
