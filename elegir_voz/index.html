@@ -29,12 +29,11 @@
   <main class="container">
     <section id="test" class="test-box">
       <h2>Test interactivo de tu rango</h2>
-      <p>Toca las teclas para oírlas y cantarlas. Cuando encuentres tu límite cómodo, márcalo:</p>
+      <p>Toca las teclas para oírlas y cantarlas. Marca tu nota más grave y más aguda:</p>
 
       <div class="mark-actions">
         <button id="btn-mark-low" class="btn btn-ghost" disabled>Marcar como mi GRAVE</button>
         <button id="btn-mark-high" class="btn btn-ghost" disabled>Marcar como mi AGUDO</button>
-        <button id="btn-clear" class="btn btn-ghost">Limpiar</button>
       </div>
 
       <div class="hero-controls">
@@ -50,6 +49,7 @@
           Volumen:
           <input type="range" id="volumen" min="0" max="100" value="80" />
         </label>
+        <button id="btn-clear" class="btn btn-ghost" title="Quitar marcadores">Quitar Marcadores</button>
       </div>
 
       <div id="piano" class="piano" aria-label="Teclado piano de Mi2 a Do6"></div>
