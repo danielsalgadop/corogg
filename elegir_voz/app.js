@@ -1,46 +1,26 @@
 // App Descubre tu Voz - síntesis con Web Audio API, sin MP3
+// Solo 3 partes del coro: Voz 1 (aguda), Voz 2 (media), Voz 3 (grave)
 const VOICES = [
   {
-    id:'soprano', nombre:'Soprano', cat:'Voz femenina · la más aguda',
-    low:60, high:84, color:'#ff7ab8',
+    id:'voz1', nombre:'Voz 1', cat:'Aguda · línea clara',
+    low:60, high:84, color:'#dfb76c',
     rangoTxt:'Do4 (C4) – Do6 (C6)', freqTxt:'261.6 Hz – 1046.5 Hz',
-    desc:'Brillante y ligera arriba. Reinas del agudo: arias, pop agudo.',
-    ejemplo:'Ej: Mariah Carey, Montserrat Caballé'
+    desc:'La línea más aguda. Lleva la melodía y empieza el recorrido.',
+    ejemplo:'Fichas: Repertorio → Voces → Voz 1'
   },
   {
-    id:'mezzo', nombre:'Mezzosoprano', cat:'Voz femenina · intermedia',
-    low:57, high:81, color:'#8b7bff',
-    rangoTxt:'La3 (A3) – La5 (A5)', freqTxt:'220.0 Hz – 880.0 Hz',
-    desc:'Cálida y versátil, cómoda en el centro. La voz femenina más común.',
-    ejemplo:'Ej: Adele, Cecilia Bartoli'
+    id:'voz2', nombre:'Voz 2', cat:'Intermedia · armonía',
+    low:50, high:74, color:'#00e5ff',
+    rangoTxt:'Re3 (D3) – Re5 (D5)', freqTxt:'146.8 Hz – 587.3 Hz',
+    desc:'La parte intermedia que sostiene la armonía.',
+    ejemplo:'Fichas: Repertorio → Voces → Voz 2'
   },
   {
-    id:'contralto', nombre:'Contralto', cat:'Voz femenina · la más grave',
-    low:53, high:77, color:'#4aa8ff',
-    rangoTxt:'Fa3 (F3) – Fa5 (F5)', freqTxt:'174.6 Hz – 698.5 Hz',
-    desc:'Oscura y aterciopelada en graves. Poco común, muy valiosa en coros.',
-    ejemplo:'Ej: Tracy Chapman, Marian Anderson'
-  },
-  {
-    id:'tenor', nombre:'Tenor', cat:'Voz masculina · la más aguda',
-    low:48, high:72, color:'#ffcf5c',
-    rangoTxt:'Do3 (C3) – Do5 (C5)', freqTxt:'130.8 Hz – 523.3 Hz',
-    desc:'Brillante y heroica arriba. Protagonista masculino en ópera y pop.',
-    ejemplo:'Ej: Pavarotti, Freddie Mercury'
-  },
-  {
-    id:'baritono', nombre:'Barítono', cat:'Voz masculina · intermedia',
-    low:43, high:67, color:'#4ade80',
-    rangoTxt:'Sol2 (G2) – Sol4 (G4)', freqTxt:'98.0 Hz – 392.0 Hz',
-    desc:'La voz masculina más común. Potente y equilibrada.',
-    ejemplo:'Ej: Frank Sinatra, Piero Cappuccilli'
-  },
-  {
-    id:'bajo', nombre:'Bajo', cat:'Voz masculina · la más grave',
-    low:40, high:64, color:'#2dd4bf',
+    id:'voz3', nombre:'Voz 3', cat:'Grave · base',
+    low:40, high:64, color:'#4ade80',
     rangoTxt:'Mi2 (E2) – Mi4 (E4)', freqTxt:'82.4 Hz – 329.6 Hz',
-    desc:'Profunda y resonante. Base del coro y de la ópera.',
-    ejemplo:'Ej: Barry White, Boris Christoff'
+    desc:'El registro grave para completar el conjunto.',
+    ejemplo:'Fichas: Repertorio → Voces → Voz 3'
   },
 ];
 
@@ -236,12 +216,9 @@ document.getElementById('btn-analyze').onclick=()=>{
 
 function consejo(id){
   switch(id){
-    case 'soprano': return 'Calienta con sirenas suaves hacia arriba y evita empujar el pecho en agudos; usa voz de cabeza.';
-    case 'mezzo': return 'Trabaja el pasaje Mi4-Sol4 para unificar pecho y cabeza; tu fuerte es el centro.';
-    case 'contralto': return 'Potencia tus graves con respiración baja y vocales abiertas; no intentes imitar sopranos.';
-    case 'tenor': return 'Calienta grave y sube por semitonos; no grites el Do5, apóyalo con falsete primero.';
-    case 'baritono': return 'Tu zona de oro es Sol2-Sol4; trabaja dicción y apoyo para brillar sin subir de más.';
-    default: return 'Canta graves con relajación de garganta y mucho aire; hidrátate y evita forzar.';
+    case 'voz1': return 'Tu zona es la melodía aguda. Calienta hacia arriba sin empujar y entra en las fichas de Voz 1.';
+    case 'voz2': return 'Tu fuerte es el centro. Practica los pasajes de enlace y entra en las fichas de Voz 2.';
+    default: return 'Tu base son los graves con apoyo y aire. No fuerces agudos y entra en las fichas de Voz 3.';
   }
 }
 

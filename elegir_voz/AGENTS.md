@@ -1,6 +1,6 @@
 # AGENTS.md - Descubre tu Voz
 
-App estática (HTML + CSS + JS) que ayuda a saber tu tipo de voz (Soprano, Mezzo, Contralto, Tenor, Barítono, Bajo) escuchando tonos generados con Web Audio API. Sin backend, sin MP3, sin dependencias.
+App estática (HTML + CSS + JS) que ayuda a saber tu parte en el coro (Voz 1, Voz 2, Voz 3) escuchando tonos generados con Web Audio API. Sin backend, sin MP3, sin dependencias. Tema visual corogg (dorado/oscuro, Cinzel+Montserrat, nav).
 
 ## Estructura
 - `index.html` - Estructura: hero + controles timbre/volumen, grid `#voice-grid`, test con piano `#piano`, tabla `#table-body`, resultado `#resultado`
@@ -16,12 +16,9 @@ Abrir `index.html` directo con `file://` también funciona (todo es cliente).
 
 ## Datos clave (app.js)
 `VOICES[]` con `id, nombre, low/high (MIDI), rangoTxt, freqTxt`:
-- soprano: 60-84 (Do4-Do6)
-- mezzo: 57-81 (La3-La5)
-- contralto: 53-77 (Fa3-Fa5)
-- tenor: 48-72 (Do3-Do5)
-- baritono: 43-67 (Sol2-Sol4)
-- bajo: 40-64 (Mi2-Mi4)
+- voz1: 60-84 (Do4-Do6)
+- voz2: 50-74 (Re3-Re5)
+- voz3: 40-64 (Mi2-Mi4)
 
 Piano: `LOW_MIDI=40 (Mi2)` a `HIGH_MIDI=84 (Do6)`.
 `midiToFreq(m) = 440*2^((m-69)/12)`, `midiToName()` devuelve `Do4 (C4)`.
