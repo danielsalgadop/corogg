@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Descubre tu Voz | Test de Tesitura Vocal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <p class="badge">🎵 Soprano · Mezzo · Contralto · Tenor · Barítono · Bajo</p>
+      <h1>Descubre qué tipo de voz eres</h1>
+      <p class="subtitle">Escucha los tonos de cada rango vocal, canta con ellos y haz el test interactivo para encontrar tu tesitura.</p>
+      <div class="hero-actions">
+        <a href="#test" class="btn btn-primary">Hacer mi test de voz</a>
+        <a href="#voces" class="btn btn-ghost">Escuchar rangos</a>
+      </div>
+      <div class="hero-controls">
+        <label>
+          Timbre:
+          <select id="timbre">
+            <option value="vocal" selected>Vocal “Ah”</option>
+            <option value="piano">Piano</option>
+            <option value="flauta">Flauta</option>
+          </select>
+        </label>
+        <label>
+          Volumen:
+          <input type="range" id="volumen" min="0" max="100" value="80" />
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="how">
+      <h2>¿Cómo usar la app?</h2>
+      <div class="steps">
+        <div class="step"><span>1</span><p><strong>Escucha</strong> la nota más grave y más aguda de cada tipo de voz abajo.</p></div>
+        <div class="step"><span>2</span><p><strong>Canta</strong> intentando igualar el tono cómodamente, sin forzar.</p></div>
+        <div class="step"><span>3</span><p><strong>Marca</strong> en el piano tu nota más grave y más aguda cómoda y pulsa <em>Analizar</em>.</p></div>
+      </div>
+    </section>
+
+    <section id="voces">
+      <h2>Rangos vocales: escucha y compara</h2>
+      <p class="muted">Pulsa ▶ para oír la nota. “Escala” reproduce todo el rango ascendente.</p>
+      <div id="voice-grid" class="grid"></div>
+    </section>
+
+    <section id="test" class="test-box">
+      <h2>Test interactivo de tu rango</h2>
+      <p>Toca las teclas para oírlas y cantarlas. Cuando encuentres tu límite cómodo, márcalo:</p>
+
+      <div class="now-playing" id="now-playing">Toca una tecla… 🎹</div>
+
+      <div class="selected-range">
+        <div>Mi grave: <strong id="low-label">—</strong></div>
+        <div>Mi agudo: <strong id="high-label">—</strong></div>
+        <div>Amplitud: <strong id="range-label">—</strong></div>
+      </div>
+
+      <div class="mark-actions">
+        <button id="btn-mark-low" class="btn btn-ghost" disabled>Marcar como mi GRAVE</button>
+        <button id="btn-mark-high" class="btn btn-ghost" disabled>Marcar como mi AGUDO</button>
+        <button id="btn-clear" class="btn btn-ghost">Limpiar</button>
+      </div>
+
+      <div id="piano" class="piano" aria-label="Teclado piano de Mi2 a Do6"></div>
+      <p class="muted small">Rango del piano: Mi2 (E2 · 82.4 Hz) hasta Do6 (C6 · 1046.5 Hz). Las teclas amarillas son Do (C).</p>
+
+      <div class="analyze-actions">
+        <button id="btn-analyze" class="btn btn-primary big">Analizar mi voz ✨</button>
+        <button id="btn-mic" class="btn btn-primary big">🎤 Detectar con micro</button>
+        <p class="muted small mic-hint">Sin guardar ni subir: detecta tu grave y agudo cantando de grave a agudo.</p>
+      </div>
+
+      <div id="resultado" class="resultado hidden"></div>
+    </section>
+
+    <section class="table-section">
+      <h2>Tabla resumen de tesituras</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Voz</th><th>Tipo</th><th>Rango</th><th>Frecuencias</th><th>Escuchar</th></tr></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <p class="muted small">Nota: son rangos orientativos de coro / canto lírico. Tu tesitura cómoda puede ser 2-3 semitonos más estrecha. Si dudas entre dos voces, elige la que cante más cómoda en el centro.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Hecho con Web Audio API · Sin archivos MP3 · Los tonos se generan en tu navegador · No sustituye a un profesor de canto.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
