@@ -105,14 +105,10 @@ VOICES.forEach(v=>{
   el.innerHTML=`
     <div class="cat">${v.cat}</div>
     <h3>${v.nombre}</h3>
-    <div class="range">🎶 <strong>${v.rangoTxt}</strong></div>
-    <div class="freq">${v.freqTxt}</div>
-    <p class="desc">${v.desc}<br><span class="muted small">${v.ejemplo}</span></p>
     <div class="play-row">
-      <button class="chip" data-a="low">▶ Grave: ${midiShort(v.low)}</button>
-      <button class="chip" data-a="mid">▶ Centro: ${midiShort(mid)}</button>
-      <button class="chip" data-a="high">▶ Agudo: ${midiShort(v.high)}</button>
-      <button class="chip scale" data-a="scale">▶ Escala completa</button>
+      <button class="chip" data-a="low">▶ Grave</button>
+      <button class="chip" data-a="mid">▶ Centro</button>
+      <button class="chip" data-a="high">▶ Agudo</button>
     </div>`;
   el.querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{
@@ -120,7 +116,6 @@ VOICES.forEach(v=>{
       if(a==='low'){playTone(v.low);showNow(v.low);}
       if(a==='mid'){playTone(mid);showNow(mid);}
       if(a==='high'){playTone(v.high);showNow(v.high);}
-      if(a==='scale'){playScale(v.low,v.high);}
     };
   });
   grid.appendChild(el);
