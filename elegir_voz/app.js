@@ -175,10 +175,11 @@ function highlightKey(m){
 }
 const btnLow=document.getElementById('btn-mark-low');
 const btnHigh=document.getElementById('btn-mark-high');
+const btnClear=document.getElementById('btn-clear');
 function updateButtons(){ btnLow.disabled = lastPlayed==null; btnHigh.disabled = lastPlayed==null; }
 
-btnLow.onclick=()=>{ if(lastPlayed==null) return; myLow=lastPlayed; refreshMarks(); };
-btnHigh.onclick=()=>{ if(lastPlayed==null) return; myHigh=lastPlayed; refreshMarks(); };
+btnLow.onclick=()=>{ if(lastPlayed==null) return; myLow=lastPlayed; refreshMarks(); maybeAnalyze(); };
+btnHigh.onclick=()=>{ if(lastPlayed==null) return; myHigh=lastPlayed; refreshMarks(); maybeAnalyze(); };
 document.getElementById('btn-clear').onclick=()=>{ myLow=myHigh=lastPlayed=null; refreshMarks(); updateButtons(); document.getElementById('resultado').classList.add('hidden'); setNowText(''); };
 
 function refreshMarks(){
@@ -193,12 +194,18 @@ function refreshMarks(){
   } else if(rangeEl) rangeEl.textContent='—';
   if(myLow!=null) keyEls[myLow]?.classList.add('mark-low');
   if(myHigh!=null) keyEls[myHigh]?.classList.add('mark-high');
+  if(btnClear) btnClear.disabled = (myLow==null && myHigh==null);
 }
+updateButtons(); refreshMarks();
 
-// --- Análisis ---
-document.getElementById('btn-analyze').onclick=()=>{
+// --- Análisis (automático al tener las dos marcas) ---
+function maybeAnalyze(){
+  if(myLow!=null&&myHigh!=null) analyzeVoice();
+}
+function analyzeVoice(){
   const res=document.getElementById('resultado');
-  if(myLow==null||myHigh==null){ res.classList.remove('hidden'); res.innerHTML=`<h3>⚠️ Te falta un paso</h3><p>Marca tu nota más <strong>grave</strong> y tu nota más <strong>aguda</strong> cómoda en el piano de arriba, luego vuelve a pulsar Analizar.</p>`; res.scrollIntoView({behavior:'smooth'}); return; }
+  if(!res) return;
+  if(myLow==null||myHigh==null){ return; }
   if(myHigh<myLow){ res.classList.remove('hidden'); res.innerHTML=`<h3>⚠️ Rango invertido</h3><p>Tu nota aguda (${midiToName(myHigh)}) es más grave que tu grave (${midiToName(myLow)}). Intercámbialas.</p>`; return; }
   const scored = VOICES.map(v=>{
     const lo=Math.max(myLow,v.low), hi=Math.min(myHigh,v.high);
@@ -286,7 +293,7 @@ function micLoop(){
       if(myLow==null||midi<myLow) myLow=midi;
       if(myHigh==null||midi>myHigh) myHigh=midi;
       lastPlayed=midi; updateButtons(); refreshMarks(); highlightKey(midi);
-      setNowHtml(`🎙️ <strong>${midiToName(midi)}</strong> · ${freq.toFixed(1)} Hz<br><span class="muted small">Rango: ${midiToName(myLow)} – ${midiToName(myHigh)} · pulsa Detener y luego Analizar</span>`);
+      setNowHtml(`🎙️ <strong>${midiToName(midi)}</strong> · ${freq.toFixed(1)} Hz<br><span class="muted small">Rango: ${midiToName(myLow)} – ${midiToName(myHigh)} · pulsa Detener para ver tu voz</span>`);
     }
   }
   micRaf=requestAnimationFrame(micLoop);
@@ -297,7 +304,8 @@ async function micToggle(){
     micStream?.getTracks().forEach(t=>t.stop()); micStream=null; micAnalyser=null;
     micListening=false; micSetUI();
     if(myLow!=null&&myHigh!=null){
-      setNowHtml(`🎙️ Rango por micro: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong><br><span class="muted small">Pulsa Analizar mi voz ✨</span>`);
+      setNowHtml(`🎙️ Rango por micro: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong>`);
+      maybeAnalyze();
     } else setNowText('');
     return;
   }
