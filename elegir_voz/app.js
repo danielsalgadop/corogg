@@ -136,15 +136,19 @@ VOICES.forEach(v=>{
   });
   grid.appendChild(el);
 
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td><strong>${v.nombre}</strong></td><td>${v.cat.split('·')[0]}</td><td>${v.rangoTxt}</td><td>${v.freqTxt}</td><td><button class="chip" data-v="${v.id}">Escuchar</button></td>`;
-  tr.querySelector('button').onclick=()=>playScale(v.low,v.high);
-  tbody.appendChild(tr);
+  if(tbody){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${v.nombre}</strong></td><td>${v.cat.split('·')[0]}</td><td>${v.rangoTxt}</td><td>${v.freqTxt}</td><td><button class="chip" data-v="${v.id}">Escuchar</button></td>`;
+    tr.querySelector('button').onclick=()=>playScale(v.low,v.high);
+    tbody.appendChild(tr);
+  }
 });
 
 // --- Piano Mi2 (40) a Do6 (84) ---
 const piano=document.getElementById('piano');
 const nowPlaying=document.getElementById('now-playing');
+function setNowHtml(h){ if(nowPlaying) nowPlaying.innerHTML=h; }
+function setNowText(t){ if(nowPlaying) nowPlaying.textContent=t; }
 const LOW_MIDI=40, HIGH_MIDI=84;
 let lastPlayed=null, myLow=null, myHigh=null;
 const keyEls={};
@@ -163,7 +167,7 @@ for(let m=LOW_MIDI;m<=HIGH_MIDI;m++){
 }
 
 function showNow(m){
-  nowPlaying.innerHTML=`🎧 <strong>${midiToName(m)}</strong> · ${midiToFreq(m).toFixed(1)} Hz · MIDI ${m}<br><span class="muted small">Canta un “Ah” intentando igualarlo sin forzar</span>`;
+  setNowHtml(`🎧 <strong>${midiToName(m)}</strong> · ${midiToFreq(m).toFixed(1)} Hz · MIDI ${m}<br><span class="muted small">Canta un “Ah” intentando igualarlo sin forzar</span>`);
 }
 function highlightKey(m){
   Object.values(keyEls).forEach(k=>k.classList.remove('active'));
@@ -175,17 +179,18 @@ function updateButtons(){ btnLow.disabled = lastPlayed==null; btnHigh.disabled =
 
 btnLow.onclick=()=>{ if(lastPlayed==null) return; myLow=lastPlayed; refreshMarks(); };
 btnHigh.onclick=()=>{ if(lastPlayed==null) return; myHigh=lastPlayed; refreshMarks(); };
-document.getElementById('btn-clear').onclick=()=>{ myLow=myHigh=lastPlayed=null; refreshMarks(); updateButtons(); document.getElementById('resultado').classList.add('hidden'); nowPlaying.textContent='Toca una tecla… 🎹'; };
+document.getElementById('btn-clear').onclick=()=>{ myLow=myHigh=lastPlayed=null; refreshMarks(); updateButtons(); document.getElementById('resultado').classList.add('hidden'); setNowText(''); };
 
 function refreshMarks(){
   Object.values(keyEls).forEach(k=>k.classList.remove('mark-low','mark-high','in-range'));
-  document.getElementById('low-label').textContent = myLow!=null ? `${midiToName(myLow)}` : '—';
-  document.getElementById('high-label').textContent = myHigh!=null ? `${midiToName(myHigh)}` : '—';
+  const lowEl=document.getElementById('low-label'), highEl=document.getElementById('high-label'), rangeEl=document.getElementById('range-label');
+  if(lowEl) lowEl.textContent = myLow!=null ? `${midiToName(myLow)}` : '—';
+  if(highEl) highEl.textContent = myHigh!=null ? `${midiToName(myHigh)}` : '—';
   if(myLow!=null && myHigh!=null){
     const semis = myHigh-myLow;
-    document.getElementById('range-label').textContent = semis<0 ? '⚠️ el agudo es más grave que el grave' : `${semis} semitonos`;
+    if(rangeEl) rangeEl.textContent = semis<0 ? '⚠️ el agudo es más grave que el grave' : `${semis} semitonos`;
     if(semis>=0) for(let m=myLow;m<=myHigh;m++) keyEls[m]?.classList.add('in-range');
-  } else document.getElementById('range-label').textContent='—';
+  } else if(rangeEl) rangeEl.textContent='—';
   if(myLow!=null) keyEls[myLow]?.classList.add('mark-low');
   if(myHigh!=null) keyEls[myHigh]?.classList.add('mark-high');
 }
@@ -268,7 +273,7 @@ let micStream=null, micAnalyser=null, micBuf=null, micRaf=null, micListening=fal
 const btnMic=document.getElementById('btn-mic');
 
 function micSetUI(){
-  btnMic.textContent = micListening ? '■ Detener detección' : '🎤 Detectar con micro';
+  btnMic.textContent = micListening ? '■ Detener detección' : '🎤 Canta y verás la nota';
   btnMic.classList.toggle('listening', micListening);
 }
 function micLoop(){
@@ -281,7 +286,7 @@ function micLoop(){
       if(myLow==null||midi<myLow) myLow=midi;
       if(myHigh==null||midi>myHigh) myHigh=midi;
       lastPlayed=midi; updateButtons(); refreshMarks(); highlightKey(midi);
-      nowPlaying.innerHTML=`🎙️ <strong>${midiToName(midi)}</strong> · ${freq.toFixed(1)} Hz<br><span class="muted small">Rango: ${midiToName(myLow)} – ${midiToName(myHigh)} · pulsa Detener y luego Analizar</span>`;
+      setNowHtml(`🎙️ <strong>${midiToName(midi)}</strong> · ${freq.toFixed(1)} Hz<br><span class="muted small">Rango: ${midiToName(myLow)} – ${midiToName(myHigh)} · pulsa Detener y luego Analizar</span>`);
     }
   }
   micRaf=requestAnimationFrame(micLoop);
@@ -292,16 +297,16 @@ async function micToggle(){
     micStream?.getTracks().forEach(t=>t.stop()); micStream=null; micAnalyser=null;
     micListening=false; micSetUI();
     if(myLow!=null&&myHigh!=null){
-      nowPlaying.innerHTML=`🎙️ Rango por micro: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong><br><span class="muted small">Pulsa Analizar mi voz ✨</span>`;
-    } else nowPlaying.textContent='Toca una tecla… 🎹';
+      setNowHtml(`🎙️ Rango por micro: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong><br><span class="muted small">Pulsa Analizar mi voz ✨</span>`);
+    } else setNowText('');
     return;
   }
   if(!navigator.mediaDevices?.getUserMedia){
-    nowPlaying.textContent='⚠️ Tu navegador no permite micrófono (usa localhost o HTTPS).';
+    setNowText('⚠️ Tu navegador no permite micrófono (usa localhost o HTTPS).');
     return;
   }
   try{
-    nowPlaying.textContent='Pidiendo permiso de micro… 🎙️';
+    setNowText('Pidiendo permiso de micro… 🎙️');
     micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}});
     const ac=audio();
     const src=ac.createMediaStreamSource(micStream);
@@ -310,10 +315,10 @@ async function micToggle(){
     src.connect(micAnalyser);
     myLow=myHigh=null; refreshMarks();
     micListening=true; micSetUI();
-    nowPlaying.textContent='Canta de grave a agudo… 🎤';
+    setNowText('Canta de grave a agudo… 🎤');
     micLoop();
   }catch(e){
-    nowPlaying.textContent='⚠️ Sin acceso al micro. Revisa permisos del navegador.';
+    setNowText('⚠️ Sin acceso al micro. Revisa permisos del navegador.');
   }
 }
 btnMic.onclick=micToggle;

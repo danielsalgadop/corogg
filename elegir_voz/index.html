@@ -18,12 +18,25 @@
   <header class="selection-top">
     <div class="container">
       <p class="selection-kicker">Ecos del Atlántico · ¿Qué voz soy?</p>
-      <h1>Elige tu voz</h1>
+      <h1>Descubre tu voz</h1>
       <p class="subtitle">Escucha cada voz, canta sin forzar y marca tu grave y agudo: sabrás si eres Voz 1, 2 o 3.</p>
-      <div class="hero-actions">
-        <a href="#test" class="btn btn-primary">Hacer mi test de voz</a>
-        <a href="#voces" class="btn btn-ghost">Escuchar rangos</a>
+      <div id="voces">
+        <div id="voice-grid" class="grid"></div>
       </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="test" class="test-box">
+      <h2>Test interactivo de tu rango</h2>
+      <p>Toca las teclas para oírlas y cantarlas. Cuando encuentres tu límite cómodo, márcalo:</p>
+
+      <div class="mark-actions">
+        <button id="btn-mark-low" class="btn btn-ghost" disabled>Marcar como mi GRAVE</button>
+        <button id="btn-mark-high" class="btn btn-ghost" disabled>Marcar como mi AGUDO</button>
+        <button id="btn-clear" class="btn btn-ghost">Limpiar</button>
+      </div>
+
       <div class="hero-controls">
         <label>
           Timbre:
@@ -38,63 +51,18 @@
           <input type="range" id="volumen" min="0" max="100" value="80" />
         </label>
       </div>
-    </div>
-  </header>
-
-  <main class="container">
-    <section id="voces">
-      <h2>Voces: escucha y compara</h2>
-      <p class="muted">Pulsa ▶ para oír la nota. “Escala” reproduce todo el rango ascendente.</p>
-      <div id="voice-grid" class="grid"></div>
-    </section>
-
-    <section id="test" class="test-box">
-      <h2>Test interactivo de tu rango</h2>
-      <p>Toca las teclas para oírlas y cantarlas. Cuando encuentres tu límite cómodo, márcalo:</p>
-
-      <div class="now-playing" id="now-playing">Toca una tecla… 🎹</div>
-
-      <div class="selected-range">
-        <div>Mi grave: <strong id="low-label">—</strong></div>
-        <div>Mi agudo: <strong id="high-label">—</strong></div>
-        <div>Amplitud: <strong id="range-label">—</strong></div>
-      </div>
-
-      <div class="mark-actions">
-        <button id="btn-mark-low" class="btn btn-ghost" disabled>Marcar como mi GRAVE</button>
-        <button id="btn-mark-high" class="btn btn-ghost" disabled>Marcar como mi AGUDO</button>
-        <button id="btn-clear" class="btn btn-ghost">Limpiar</button>
-      </div>
 
       <div id="piano" class="piano" aria-label="Teclado piano de Mi2 a Do6"></div>
-      <p class="muted small">Rango del piano: Mi2 (E2 · 82.4 Hz) hasta Do6 (C6 · 1046.5 Hz). Las teclas amarillas son Do (C).</p>
 
       <div class="analyze-actions">
-        <button id="btn-analyze" class="btn btn-primary big">Analizar mi voz ✨</button>
-        <button id="btn-mic" class="btn btn-primary big">🎤 Detectar con micro</button>
+        <button id="btn-analyze" class="btn btn-primary big">Dime mi voz ✨</button>
+        <button id="btn-mic" class="btn btn-primary big">🎤 Canta y verás la nota</button>
         <p class="muted small mic-hint">Sin guardar ni subir: detecta tu grave y agudo cantando de grave a agudo.</p>
       </div>
 
       <div id="resultado" class="resultado hidden"></div>
     </section>
-
-    <section class="table-section">
-      <h2>Tabla resumen de voces</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Voz</th><th>Tipo</th><th>Rango</th><th>Frecuencias</th><th>Escuchar</th></tr></thead>
-          <tbody id="table-body"></tbody>
-        </table>
-      </div>
-      <p class="muted small">Rangos orientativos para repartir Voz 1 (aguda), Voz 2 (media) y Voz 3 (grave). Si dudas entre dos, elige la que cantes más cómoda en el centro y consulta al director.</p>
-    </section>
   </main>
-
-  <footer>
-    <div class="container">
-      <p><a href="../ayuda.html">← Volver a Ayuda</a> · Hecho con Web Audio API · Sin archivos MP3 · Los tonos se generan en tu navegador · No sustituye a un profesor de canto.</p>
-    </div>
-  </footer>
 
   <script src="app.js"></script>
 </body>
