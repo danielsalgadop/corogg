@@ -3,7 +3,7 @@
 App estática (HTML + CSS + JS) que ayuda a saber tu parte en el coro (Voz 1, Voz 2, Voz 3) escuchando tonos generados con Web Audio API. Sin backend, sin MP3, sin dependencias. Tema visual corogg (dorado/oscuro, Cinzel+Montserrat, nav).
 
 ## Estructura
-- `index.html` - Estructura: hero + controles timbre/volumen, grid `#voice-grid`, test con piano `#piano`, tabla `#table-body`, resultado `#resultado`
+- `index.html` - Estructura: hero, grid `#voice-grid`, test con piano `#piano`, resultado `#resultado`
 - `styles.css` - Tema oscuro, variables CSS, layout grid + piano con scroll horizontal
 - `app.js` - Toda la lógica: datos VOICES, síntesis, piano, análisis
 
@@ -25,8 +25,8 @@ Piano: `LOW_MIDI=40 (Mi2)` a `HIGH_MIDI=84 (Do6)`.
 
 ## Audio (Web Audio API)
 - `playTone(midi, dur)` - crea AudioContext lazy, envelope gain 0.08s attack / release 0.25s
-- Timbres (`#timbre`): `vocal` (2x sawtooth + lowpass + bandpass), `piano` (triangle+sine octava), `flauta` (sine + vibrato 5.5Hz)
-- Volumen: `#volumen` 0-100 -> gain 0-0.5
+- Timbres: solo `vocal` oculto (`#timbre=hidden`): 2x sawtooth + lowpass + bandpass
+- Volumen: fijo `FIXED_VOL=0.4` (antes `#volumen` 0-100)
 - `playScale(low,high)` - reproduce ascendente con `setTimeout 650ms`, llama a `highlightKey()` + `showNow()`. `stopScale()` cancela.
 
 ## Test / Análisis

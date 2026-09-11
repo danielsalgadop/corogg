@@ -40,34 +40,18 @@ function midiShort(m){
 // --- Audio ---
 let ctx=null;
 function audio(){ if(!ctx) ctx = new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended') ctx.resume(); return ctx; }
-function getVol(){ return (document.getElementById('volumen').value/100)*0.5; }
-function getTimbre(){ return document.getElementById('timbre').value; }
+const FIXED_VOL=0.4; // ganancia fija (equivale al antiguo 80%)
 
 function playTone(midi, dur=1.2){
   const ac = audio(), f = midiToFreq(midi), t = ac.currentTime;
-  const vol = getVol(), timbre = getTimbre();
+  const vol = FIXED_VOL;
   const master = ac.createGain();
   master.gain.setValueAtTime(0.0001,t);
   master.gain.exponentialRampToValueAtTime(Math.max(vol,0.001), t+0.08);
   master.gain.setValueAtTime(Math.max(vol,0.001), t+dur-0.25);
   master.gain.exponentialRampToValueAtTime(0.0001, t+dur);
 
-  if(timbre==='piano'){
-    const o = ac.createOscillator(); o.type='triangle'; o.frequency.value=f;
-    const o2 = ac.createOscillator(); o2.type='sine'; o2.frequency.value=f*2;
-    const g2 = ac.createGain(); g2.gain.value=0.25;
-    o.connect(master); o2.connect(g2); g2.connect(master);
-    o.start(t); o2.start(t); o.stop(t+dur); o2.stop(t+dur);
-  } else if(timbre==='flauta'){
-    const o = ac.createOscillator(); o.type='sine'; o.frequency.value=f;
-    const o2 = ac.createOscillator(); o2.type='sine'; o2.frequency.value=f*2;
-    const g2 = ac.createGain(); g2.gain.value=0.12;
-    const vib = ac.createOscillator(); vib.frequency.value=5.5;
-    const vibG = ac.createGain(); vibG.gain.value=4;
-    vib.connect(vibG); vibG.connect(o.frequency);
-    o.connect(master); o2.connect(g2); g2.connect(master);
-    o.start(t); o2.start(t); vib.start(t); o.stop(t+dur); o2.stop(t+dur); vib.stop(t+dur);
-  } else { // vocal Ah
+  { // vocal Ah (único timbre)
     const o1 = ac.createOscillator(); o1.type='sawtooth'; o1.frequency.value=f;
     const o2 = ac.createOscillator(); o2.type='sawtooth'; o2.frequency.value=f*1.003;
     const filt = ac.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=Math.min(f*4,3500); filt.Q.value=0.8;
