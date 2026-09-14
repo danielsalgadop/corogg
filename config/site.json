@@ -13,10 +13,10 @@
       "total_fichas": 6,
       "partitura": "songs/cant-help-falling-in-love/cant-help-falling-in-love.pdf",
       "guitarras": {
-        "1": null,
+        "1": "songs/cant-help-falling-in-love/ficha3/guitarra3.mp3",
         "2": "songs/cant-help-falling-in-love/ficha2/guitarra2.mp3",
         "3": "songs/cant-help-falling-in-love/ficha3/guitarra3.mp3",
-        "4": null,
+        "4": "songs/cant-help-falling-in-love/ficha2/guitarra2.mp3",
         "5": null,
         "6": null
       },
@@ -34,37 +34,43 @@
               "ficha": 1,
               "html": "songs/cant-help-falling-in-love/ficha1/voz1/voz1.html",
               "particella": null,
-              "guia": null
+              "guia": null,
+              "particella_altura": null
             },
             {
               "ficha": 2,
               "html": "songs/cant-help-falling-in-love/ficha2/voz1/voz1.html",
               "particella": "songs/cant-help-falling-in-love/ficha2/voz1/particella_2_voz1.pdf",
-              "guia": "songs/cant-help-falling-in-love/ficha2/voz1/guia_2_voz_1.m4a"
+              "guia": "songs/cant-help-falling-in-love/ficha2/voz1/guia_2_voz_1.m4a",
+              "particella_altura": 400
             },
             {
               "ficha": 3,
               "html": "songs/cant-help-falling-in-love/ficha3/voz1/voz1.html",
               "particella": "songs/cant-help-falling-in-love/ficha3/voz1/particella_3_voz1.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 500
             },
             {
               "ficha": 4,
               "html": "songs/cant-help-falling-in-love/ficha4/voz1/voz1.html",
               "particella": null,
-              "guia": null
+              "guia": null,
+              "particella_altura": null
             },
             {
               "ficha": 5,
               "html": "songs/cant-help-falling-in-love/ficha5/voz1/voz1.html",
               "particella": "songs/cant-help-falling-in-love/ficha5/voz1/particella_5_voz1.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 6,
               "html": "songs/cant-help-falling-in-love/ficha6/voz1/voz1.html",
               "particella": "songs/cant-help-falling-in-love/ficha6/voz1/particella_6_voz_1.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             }
           ]
         },
@@ -81,37 +87,43 @@
               "ficha": 1,
               "html": "songs/cant-help-falling-in-love/ficha1/voz2/voz2.html",
               "particella": "songs/cant-help-falling-in-love/ficha1/voz2/particella_1_voz2.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 800
             },
             {
               "ficha": 2,
               "html": "songs/cant-help-falling-in-love/ficha2/voz2/voz2.html",
               "particella": "songs/cant-help-falling-in-love/ficha2/voz2/particella_2_voz2.pdf",
-              "guia": "songs/cant-help-falling-in-love/ficha2/voz2/guia_2_voz_2.m4a"
+              "guia": "songs/cant-help-falling-in-love/ficha2/voz2/guia_2_voz_2.m4a",
+              "particella_altura": 400
             },
             {
               "ficha": 3,
               "html": "songs/cant-help-falling-in-love/ficha3/voz2/voz2.html",
               "particella": "songs/cant-help-falling-in-love/ficha3/voz2/particella_3_voz2.pdf",
-              "guia": "songs/cant-help-falling-in-love/ficha3/voz2/guia_3_voz_2.m4a"
+              "guia": "songs/cant-help-falling-in-love/ficha3/voz2/guia_3_voz_2.m4a",
+              "particella_altura": 400
             },
             {
               "ficha": 4,
               "html": "songs/cant-help-falling-in-love/ficha4/voz2/voz2.html",
               "particella": "songs/cant-help-falling-in-love/ficha4/voz2/particella_4_voz2.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 5,
               "html": "songs/cant-help-falling-in-love/ficha5/voz2/voz2.html",
               "particella": "songs/cant-help-falling-in-love/ficha5/voz2/particella_5_voz2.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 6,
               "html": "songs/cant-help-falling-in-love/ficha6/voz2/voz2.html",
               "particella": "songs/cant-help-falling-in-love/ficha6/voz2/particella_6_voz2.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             }
           ]
         },
@@ -128,37 +140,43 @@
               "ficha": 1,
               "html": "songs/cant-help-falling-in-love/ficha1/voz3/voz3.html",
               "particella": "songs/cant-help-falling-in-love/ficha1/voz3/particella_1_voz3.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 800
             },
             {
               "ficha": 2,
               "html": "songs/cant-help-falling-in-love/ficha2/voz3/voz3.html",
               "particella": "songs/cant-help-falling-in-love/ficha2/voz3/particella_2_voz3.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 3,
               "html": "songs/cant-help-falling-in-love/ficha3/voz3/voz3.html",
               "particella": "songs/cant-help-falling-in-love/ficha3/voz3/particella_3_voz3.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 4,
               "html": "songs/cant-help-falling-in-love/ficha4/voz3/voz3.html",
               "particella": "songs/cant-help-falling-in-love/ficha4/voz3/particella_4_voz3.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 5,
               "html": "songs/cant-help-falling-in-love/ficha5/voz3/voz3.html",
               "particella": "songs/cant-help-falling-in-love/ficha5/voz3/partticella_5_voz3.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             },
             {
               "ficha": 6,
               "html": "songs/cant-help-falling-in-love/ficha6/voz3/voz3.html",
               "particella": "songs/cant-help-falling-in-love/ficha6/voz3/particella_6_voz3.pdf",
-              "guia": null
+              "guia": null,
+              "particella_altura": 400
             }
           ]
         }
