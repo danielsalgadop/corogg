@@ -5,6 +5,13 @@
     "title": "Repertorio",
     "subtitle": "Elige una canción para encontrar sus voces y fichas de estudio."
   },
+  "fichas_index": {
+    "kicker": "Tu recorrido de estudio",
+    "intro": "Avanza de la ficha 1 a la {total} y prepara tu parte paso a paso.",
+    "first": "Comenzar",
+    "middle": "Continuar",
+    "last": "Final"
+  },
   "songs": [
     {
       "slug": "cant-help-falling-in-love",

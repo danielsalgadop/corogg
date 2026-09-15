@@ -17,12 +17,21 @@ declare(strict_types=1);
  *   songs/cancion/fichaN/vozV/guia_N_voz_V.m4a
  *   songs/cancion/fichaN/vozV/particella_N_vozV.(png|pdf)
  *
+ * Ademas genera los indices por voz (fichas_voz*.html) a partir de
+ * config/site.json: voices[].slug/label/folder/pages.fichas, total_fichas
+ * de la cancion y el bloque fichas_index (kicker, intro con {total},
+ * etiquetas first/middle/last). Si la cancion no esta en site.json o le
+ * faltan datos, los indices se omiten con un aviso.
+ *
  * Uso:
  *   php tool_generate_fichas.php
  *   php tool_generate_fichas.php --ficha=3 --voz=2
  *   php tool_generate_fichas.php --cancion=cant-help-falling-in-love
  *   php tool_generate_fichas.php --force
  *   php tool_generate_fichas.php --dry-run
+ *
+ * Nota: los indices solo se generan en ejecuciones completas de la cancion
+ * (sin --ficha ni --voz).
  */
 
 $root = dirname(__DIR__);
@@ -120,6 +129,12 @@ for ($fichaNumber = 1; $fichaNumber <= $totalFichas; $fichaNumber++) {
 if ($requestedFicha !== null && $generated === 0 && $skipped === 0) {
     fwrite(STDERR, "No se encontro una combinacion ficha/voz compatible.\n");
     exit(1);
+}
+
+if ($requestedFicha === null && $requestedVoice === null) {
+    [$indexGenerated, $indexSkipped] = generateFichasIndexes($root, $songSlug, $totalFichas, $force, $dryRun);
+    $generated += $indexGenerated;
+    $skipped += $indexSkipped;
 }
 
 echo "Finalizado: {$generated} generado(s), {$skipped} conservado(s).\n";
@@ -357,4 +372,157 @@ function createFichaNav(
     }
 
     return "<nav class=\"ficha-nav\">{$prevLink}{$nextLink}</nav>";
+}
+
+/**
+ * Genera las paginas indice fichas_voz*.html de cada voz a partir de
+ * config/site.json (voices[].slug/label/folder/pages.fichas, total_fichas
+ * de la cancion y bloque fichas_index con kicker, intro y first/middle/last).
+ *
+ * Si site.json no existe, es invalido o no contiene la cancion, los indices
+ * se omiten con un aviso sin fallar (las paginas de voz ya estan generadas).
+ *
+ * @return array{0: int, 1: int} [$generated, $skipped]
+ */
+function generateFichasIndexes(string $root, string $songSlug, int $fallbackTotal, bool $force, bool $dryRun): array
+{
+    $generated = 0;
+    $skipped = 0;
+
+    $sitePath = $root . '/config/site.json';
+    if (!is_file($sitePath)) {
+        fwrite(STDERR, "Aviso: no existe {$sitePath}, se omiten los indices de fichas.\n");
+        return [$generated, $skipped];
+    }
+
+    try {
+        $site = json_decode((string) file_get_contents($sitePath), true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $exception) {
+        fwrite(STDERR, "Aviso: JSON invalido en {$sitePath}: {$exception->getMessage()}\n");
+        return [$generated, $skipped];
+    }
+
+    $song = null;
+    foreach (($site['songs'] ?? []) as $candidate) {
+        if (is_array($candidate) && ($candidate['slug'] ?? null) === $songSlug) {
+            $song = $candidate;
+            break;
+        }
+    }
+
+    if ($song === null) {
+        fwrite(STDERR, "Aviso: cancion '{$songSlug}' no encontrada en site.json, se omiten los indices.\n");
+        return [$generated, $skipped];
+    }
+
+    $brand = isset($site['site_title']) && is_string($site['site_title'])
+        ? $site['site_title']
+        : 'Ecos del Atlántico';
+    $texts = array_merge(
+        [
+            'kicker' => 'Tu recorrido de estudio',
+            'intro' => 'Avanza de la ficha 1 a la {total} y prepara tu parte paso a paso.',
+            'first' => 'Comenzar',
+            'middle' => 'Continuar',
+            'last' => 'Final',
+        ],
+        isset($site['fichas_index']) && is_array($site['fichas_index']) ? $site['fichas_index'] : []
+    );
+    $total = isset($song['total_fichas']) ? (int) $song['total_fichas'] : $fallbackTotal;
+
+    foreach (($song['voices'] ?? []) as $position => $voice) {
+        if (!is_array($voice)
+            || !isset($voice['slug'], $voice['label'], $voice['folder'])
+            || !is_string($voice['slug'])
+            || !is_string($voice['label'])
+            || !is_string($voice['folder'])
+            || !isset($voice['pages']['fichas'])
+            || !is_string($voice['pages']['fichas'])
+        ) {
+            fwrite(STDERR, "Aviso: voz {$position} sin slug/label/folder/pages.fichas, se omite.\n");
+            continue;
+        }
+
+        $voiceNumber = $position + 1;
+        if (preg_match('/(\d+)$/', $voice['slug'], $matches) === 1) {
+            $voiceNumber = (int) $matches[1];
+        }
+
+        $html = createFichasIndexPage($brand, $voice['label'], $voiceNumber, $total, $texts);
+        $outputPath = $root . '/' . $voice['folder'] . '/' . $voice['pages']['fichas'];
+
+        $result = LibCode::writeIfChanged($outputPath, $html, $force, $dryRun);
+        if ($result === 'generated') {
+            $generated++;
+        } elseif ($result === 'skipped') {
+            $skipped++;
+        }
+    }
+
+    return [$generated, $skipped];
+}
+
+function createFichasIndexPage(
+    string $brand,
+    string $voiceLabel,
+    int $voiceNumber,
+    int $totalFichas,
+    array $texts
+): string {
+    $safeBrand = LibCode::escape($brand);
+    $safeLabel = LibCode::escape($voiceLabel);
+    $safeKicker = LibCode::escape((string) ($texts['kicker'] ?? ''));
+    $safeIntro = LibCode::escape(
+        str_replace('{total}', (string) $totalFichas, (string) ($texts['intro'] ?? ''))
+    );
+
+    $cards = '';
+    for ($fichaNumber = 1; $fichaNumber <= $totalFichas; $fichaNumber++) {
+        $tag = (string) ($texts['middle'] ?? '');
+        if ($fichaNumber === 1) {
+            $tag = (string) ($texts['first'] ?? '');
+        } elseif ($fichaNumber === $totalFichas) {
+            $tag = (string) ($texts['last'] ?? '');
+        }
+        $number = str_pad((string) $fichaNumber, 2, '0', STR_PAD_LEFT);
+        $safeTag = LibCode::escape($tag);
+        if ($cards !== '') {
+            $cards .= "\n";
+        }
+        $cards .= "            <a href=\"ficha{$fichaNumber}/voz{$voiceNumber}/voz{$voiceNumber}.html\" class=\"ficha-card\"><span>{$number}</span><strong>Ficha {$fichaNumber}</strong><small>{$safeTag}</small></a>";
+    }
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fichas {$safeLabel} - {$safeBrand}</title>
+    <link rel="stylesheet" href="../../css.css">
+</head>
+<body>
+
+    <nav>
+        <a href="../../index.html" class="logo">
+            <span>🎼</span>{$safeBrand}
+        </a>
+        <ul>
+            <li><a href="../../ayuda.html" class="help-link">AYUDA</a></li>
+        </ul>
+    </nav>
+
+    <main class="selection-page ficha-selection">
+        <header class="selection-intro">
+            <p class="selection-kicker">{$safeKicker}</p>
+            <h1>Fichas · {$safeLabel}</h1>
+            <p>{$safeIntro}</p>
+        </header>
+        <section class="ficha-grid" aria-label="Fichas de {$safeLabel}">
+{$cards}
+        </section>
+    </main>
+</body>
+</html>
+HTML;
 }
