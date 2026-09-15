@@ -29,6 +29,9 @@ done
 # Convertir la ruta del objetivo en una ruta absoluta completa
 TARGET_DIR=$(cd "$TARGET_DIR" && pwd)
 
+# Lista negra: nombres que NUNCA se renombran (se comparan contra el nombre base completo)
+BLACKLIST=(AGENTS.md .gitignore README.md LICENSE Makefile Dockerfile LICENCIA.md)
+
 # Archivo temporal para guardar el registro de cambios
 LOG_FILE=$(mktemp)
 CONTADOR=0
@@ -50,6 +53,11 @@ find "$TARGET_DIR" -depth -name ".*" -prune -o \( -name "* *" -o -name "*[áéí
     # Obtener el directorio y el nombre base del elemento
     dir=$(dirname "$elemento")
     base=$(basename "$elemento")
+
+    # Saltar cualquier nombre de la lista negra (mayúsculas preservadas, se compara exacto)
+    if [[ " ${BLACKLIST[*]} " == *" ${base} "* ]]; then
+        continue
+    fi
 
     # Separar nombre y extensión (funciona incluso con extensiones compuestas como .tar.gz)
     if [[ "$base" == *.* ]] && [ -f "$elemento" ]; then
