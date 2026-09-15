@@ -116,7 +116,7 @@ function createRepertoryPage(array $data): string
                     <strong>{$title}</strong>
                     <span>Explorar voces <span aria-hidden="true">→</span></span>
                 </a>
-                <a href="{$partituraUrl}" class="song-card-sheet" title="Partitura completa" aria-label="Partitura completa">
+                <a href="{$partituraUrl}" class="song-card-sheet" title="Partitura completa" aria-label="Partitura completa" target="_blank">
                     <span aria-hidden="true">🎼</span>
                     <span>Partitura</span>
                 </a>
