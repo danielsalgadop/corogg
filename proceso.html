@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proceso general</title>
+  <style>
+    :root {
+      --bg: #111d25;
+      --bg-2: #182b34;
+      --panel: rgba(21, 34, 40, 0.9);
+      --panel-2: rgba(30, 46, 54, 0.86);
+      --gold: #d7b772;
+      --gold-soft: #f3dca5;
+      --text: #edf5f8;
+      --muted: #c0d1d7;
+      --line: rgba(215, 183, 114, 0.35);
+      --blue: #9ecbf0;
+      --green: #9ed7bc;
+      --rose: #e9b9c7;
+      --shadow: 0 18px 36px rgba(0,0,0,0.26);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 30px 18px 60px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--gold-soft);
+      font-size: clamp(2.2rem, 5vw, 3.7rem);
+    }
+
+    .sub {
+      max-width: 760px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+
+    .process-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 26px 18px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .track {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(220px, 1fr));
+      gap: 18px;
+      position: relative;
+      align-items: stretch;
+    }
+
+    .track::before {
+      content: "";
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      top: 50%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--blue), var(--green), var(--rose));
+      border-radius: 999px;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .step {
+      position: relative;
+      z-index: 1;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 14px 12px 12px;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .step-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .step-tag {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-soft);
+      font-weight: 700;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(215, 183, 114, 0.08);
+    }
+
+    .person {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 10px;
+    }
+
+    .avatar {
+      position: relative;
+      width: 80px;
+      height: 88px;
+    }
+
+    .avatar .head {
+      position: absolute;
+      left: 50%;
+      top: 6px;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold-soft);
+      border: 2px solid rgba(0,0,0,0.12);
+      z-index: 2;
+    }
+
+    .avatar .hair {
+      position: absolute;
+      left: 50%;
+      top: 2px;
+      transform: translateX(-50%);
+      width: 46px;
+      height: 34px;
+      background: linear-gradient(180deg, #3e2a16 0%, #2a1a0e 58%, #1a0d04 100%);
+      border-radius: 18px 18px 14px 14px;
+      z-index: 1;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.07), 0 1px 2px rgba(0,0,0,0.18);
+    }
+
+    .avatar .body {
+      z-index: 0;
+    }
+
+    .avatar .mouth {
+      z-index: 3;
+    }
+
+    .avatar.mini .hair {
+      width: 28px;
+      height: 20px;
+      top: 1px;
+      border-radius: 10px 10px 7px 7px;
+    }
+
+    .avatar .hair.hair-black { background: linear-gradient(180deg, #1e1e1e 0%, #111111 55%, #000000 100%); }
+    .avatar .hair.hair-brown { background: linear-gradient(180deg, #5a3a18 0%, #3e2810 55%, #1e1206 100%); }
+    .avatar .hair.hair-blonde { background: linear-gradient(180deg, #f3dca5 0%, #d7b772 45%, #b8963a 100%); }
+    .avatar .hair.hair-red { background: linear-gradient(180deg, #8a3d1e 0%, #6b2d14 55%, #4a1e0c 100%); }
+    .avatar .hair.hair-light { background: linear-gradient(180deg, #9c8a6b 0%, #7a6a4a 55%, #5a4a2e 100%); }
+
+    .avatar .body {
+      position: absolute;
+      left: 50%;
+      top: 32px;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 34px;
+      border-radius: 16px 16px 12px 12px;
+      background: var(--blue);
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .avatar .arm-left,
+    .avatar .arm-right {
+      position: absolute;
+      top: 38px;
+      width: 12px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--gold-soft);
+    }
+
+    .avatar .arm-left { left: 10px; transform: rotate(22deg); }
+    .avatar .arm-right { right: 10px; transform: rotate(-22deg); }
+
+    .avatar .baton,
+    .avatar .score {
+      position: absolute;
+      top: 28px;
+      width: 12px;
+      height: 50px;
+      background: linear-gradient(180deg, #f7eac4, #d9b96a);
+      border-radius: 999px;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+      transform-origin: center bottom;
+    }
+
+    .avatar .baton {
+      left: 58px;
+      width: 3px;
+      height: 54px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f8ebc7, #c9a95c);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 0 8px rgba(215, 183, 114, 0.18);
+      transform: rotate(34deg);
+    }
+
+    .avatar .score {
+      left: 8px;
+      width: 18px;
+      height: 34px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #ffffff, #dfe8ef);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+      transform: rotate(-24deg);
+    }
+
+    .avatar .score::before,
+    .avatar .score::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      height: 2px;
+      background: rgba(80, 90, 100, 0.7);
+      top: 7px;
+      box-shadow: 0 8px 0 rgba(80, 90, 100, 0.7), 0 16px 0 rgba(80, 90, 100, 0.7);
+    }
+
+    .avatar .guitar {
+      position: absolute;
+      left: 8px;
+      top: 30px;
+      width: 60px;
+      height: 30px;
+      transform: rotate(-16deg);
+      z-index: 1;
+      overflow: visible;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.28));
+    }
+
+    .avatar .guitar svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      display: block;
+    }
+
+    .avatar .prop-bits {
+      position: absolute;
+      left: -62px;
+      top: 60px;
+      display: flex;
+      gap: 1.5px;
+      z-index: 3;
+      flex-wrap: nowrap;
+    }
+
+    .avatar .prop-bits span {
+      width: 7px;
+      height: 11px;
+      background: linear-gradient(180deg, #0a1f0a 0%, #001100 100%);
+      border: 1px solid #1a4d1a;
+      border-radius: 2px;
+      font-size: 6.5px;
+      font-weight: 800;
+      color: #33ff66;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Consolas, monospace;
+      box-shadow: 0 0 4px rgba(51,255,102,0.45), inset 0 0 3px rgba(51,255,102,0.18), 0 1px 2px rgba(0,0,0,0.35);
+      line-height: 1;
+      text-shadow: 0 0 3px rgba(51,255,102,0.85), 0 0 6px rgba(51,255,102,0.45);
+    }
+
+    .avatar .prop-vinyl {
+      position: absolute;
+      right: 2px;
+      top: 56px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #f5e6c8 0 1.3px, #111111 1.9px 3.2px, #2a2a2a 3.2px 5.2px, #0a0a0a 5.2px 7.5px, #333333 7.5px 9px, #0a0a0a 9px 13px);
+      border: 1.2px solid #0a0a0a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.06);
+      z-index: 3;
+    }
+
+    .avatar .prop-vinyl::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 3px;
+      height: 3px;
+      background: #111111;
+      border: 0.8px solid #f5e6c8;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .avatar .prop-film {
+      position: absolute;
+      right: 4px;
+      top: 48px;
+      width: 20px;
+      height: 30px;
+      background: #1a0f04;
+      border: 1px solid #000;
+      border-radius: 2.5px;
+      z-index: 3;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.32), inset 0 0 0 1px rgba(255,255,255,0.04);
+      overflow: hidden;
+    }
+
+    .avatar .prop-film::before {
+      content: "";
+      position: absolute;
+      left: 3.5px;
+      right: 3.5px;
+      top: 2px;
+      bottom: 2px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.45) 0 0.7px, transparent 0.7px),
+        repeating-linear-gradient(180deg, #2a1a0e 0 1px, #c9a86a 1px 4.8px, #8a6a2e 4.8px 5px, #2a1a0e 5px 6px);
+      background-size: 100% 1px, 100% 6px;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      opacity: 0.96;
+      border-radius: 1px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.35), inset 0 0 0 0.5px rgba(255,255,255,0.06);
+    }
+
+    .avatar .prop-film::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background:
+        repeating-linear-gradient(180deg, transparent 0 1.8px, #f5e6c8 1.8px 3.2px, transparent 3.2px 6px),
+        repeating-linear-gradient(180deg, transparent 0 1.8px, #f5e6c8 1.8px 3.2px, transparent 3.2px 6px);
+      background-size: 3px 100%, 3px 100%;
+      background-position: 1px 0, calc(100% - 1px) 0;
+      background-repeat: repeat-y, repeat-y;
+      opacity: 0.94;
+      pointer-events: none;
+    }
+
+    .avatar .legs {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 20px;
+    }
+
+    .avatar .mouth {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 40%, #f2a3aa 0%, #d65d6a 42%, #7c2540 100%);
+      border: 2px solid rgba(0,0,0,0.18);
+      overflow: hidden;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,0.08);
+      z-index: 3;
+    }
+
+    .avatar .notes {
+      position: absolute;
+      left: 46px;
+      top: 2px;
+      width: 36px;
+      height: 28px;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .avatar .notes .note {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      background: #5a6268;
+      border: 1px solid #4a5157;
+      border-radius: 50% 50% 52% 48% / 60% 60% 40% 40%;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.09), 0 1px 2px rgba(0,0,0,0.22);
+    }
+
+    .avatar .notes .note::before {
+      content: "";
+      position: absolute;
+      width: 2px;
+      height: 12px;
+      background: #5a6268;
+      border-radius: 999px;
+      right: 1px;
+      top: -10px;
+      transform: rotate(8deg);
+    }
+
+    .avatar .notes .note::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 6px;
+      border-top: 2px solid #5a6268;
+      border-right: 2px solid #5a6268;
+      border-radius: 0 100% 0 0;
+      right: -5px;
+      top: -11px;
+      transform: rotate(18deg);
+    }
+
+    .avatar .notes .n1 { left: 0; top: 10px; }
+    .avatar .notes .n2 { left: 12px; top: 5px; }
+    .avatar .notes .n3 { left: 22px; top: 0; }
+
+    .avatar .notes .n2::after {
+      width: 9px;
+      height: 7px;
+      right: -6px;
+      top: -12px;
+    }
+
+    .avatar .notes .n3::after {
+      width: 10px;
+      height: 8px;
+      right: -7px;
+      top: -13px;
+    }
+
+    .avatar .legs::before,
+    .avatar .legs::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 20px;
+      border-radius: 8px;
+      background: var(--gold);
+      top: 0;
+    }
+
+    .avatar .legs::before { left: 6px; }
+    .avatar .legs::after { right: 6px; }
+
+    .avatar.alt .body { background: var(--green); }
+    .avatar.alt2 .body { background: var(--rose); }
+    .avatar.alt3 .body { background: #b8d6ff; }
+
+    .avatar .screen,
+    .avatar .keyboard {
+      position: absolute;
+      border: 2px solid rgba(20, 26, 30, 0.25);
+      background: rgba(255,255,255,0.8);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+
+    .avatar .screen {
+      left: 12px;
+      top: 8px;
+      width: 42px;
+      height: 26px;
+      border-radius: 6px;
+      transform: skewX(-8deg);
+      z-index: 2;
+    }
+
+    .avatar .screen::before {
+      content: "";
+      position: absolute;
+      inset: 5px 6px 5px 6px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, rgba(158,203,240,0.85), rgba(115,161,214,0.7));
+    }
+
+    .avatar .screen::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      width: 24px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(30,40,45,0.7);
+      transform: translateX(-50%);
+    }
+
+    .avatar .keyboard {
+      left: 15px;
+      top: 40px;
+      width: 46px;
+      height: 11px;
+      border-radius: 4px;
+      transform: skewX(-10deg);
+      background: rgba(235,241,245,0.95);
+      z-index: 3;
+    }
+
+    .avatar .keyboard::before,
+    .avatar .keyboard::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      width: 4px;
+      height: 2px;
+      background: rgba(40,48,52,0.7);
+      border-radius: 2px;
+    }
+
+    .avatar .keyboard::before { left: 6px; }
+    .avatar .keyboard::after { right: 6px; }
+
+    .avatar.alt2 .arm-left {
+      left: 3px;
+      top: 40px;
+      width: 10px;
+      height: 28px;
+      transform: rotate(54deg);
+    }
+
+    .avatar.alt2 .arm-right {
+      right: 4px;
+      top: 36px;
+      width: 10px;
+      height: 30px;
+      transform: rotate(-70deg);
+    }
+
+    .choir {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin: 10px 0 6px;
+    }
+
+    .choir-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 7px;
+    }
+
+    .avatar.mini {
+      width: 44px;
+      height: 48px;
+      position: relative;
+    }
+
+    .avatar.mini .head {
+      width: 15px;
+      height: 15px;
+      top: 4px;
+      border-width: 1.2px;
+    }
+
+    .avatar.mini .body {
+      width: 24px;
+      height: 17px;
+      top: 17px;
+      border-radius: 9px 9px 6px 6px;
+      border-width: 1px;
+    }
+
+    .avatar.mini .arm-left,
+    .avatar.mini .arm-right {
+      width: 6.5px;
+      height: 17px;
+      top: 20px;
+      border-radius: 5px;
+    }
+
+    .avatar.mini .arm-left { left: 5px; transform: rotate(18deg); }
+    .avatar.mini .arm-right { right: 5px; transform: rotate(-18deg); }
+
+    .avatar.mini .legs {
+      width: 20px;
+      height: 11px;
+    }
+
+    .avatar.mini .legs::before,
+    .avatar.mini .legs::after {
+      width: 5.5px;
+      height: 11px;
+      border-radius: 4px;
+    }
+
+    .avatar.mini .legs::before { left: 3px; }
+    .avatar.mini .legs::after { right: 3px; }
+
+    .avatar.mini .mouth {
+      width: 9px;
+      height: 7px;
+      top: 10px;
+      border-width: 1px;
+    }
+
+    .avatar.mini .notes {
+      left: 26px;
+      top: 3px;
+      width: 18px;
+      height: 14px;
+    }
+
+    .avatar.mini .notes .note {
+      width: 4px;
+      height: 6px;
+      border-width: 0.7px;
+    }
+
+    .avatar.mini .notes .note::before {
+      width: 1.1px;
+      height: 6px;
+      right: 0.6px;
+      top: -5px;
+    }
+
+    .avatar.mini .notes .note::after {
+      width: 4px;
+      height: 3px;
+      right: -2.4px;
+      top: -5.4px;
+      border-width: 1px;
+    }
+
+    .avatar.mini .notes .n1 { left: 0; top: 5px; }
+    .avatar.mini .notes .n2 { left: 6px; top: 2px; }
+    .avatar.mini .notes .n3 { left: 11px; top: -1px; }
+
+    .person-name {
+      text-align: center;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.94rem;
+    }
+
+    .result-object {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 14px 0 8px;
+    }
+
+    .result-screen {
+      width: 64px;
+      height: 38px;
+      background: linear-gradient(180deg, #1e2e3a 0%, #0f1d25 100%);
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .result-screen::before {
+      content: "";
+      position: absolute;
+      inset: 4px 5px 6px 5px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 60%);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .result-play {
+      width: 0;
+      height: 0;
+      border-left: 18px solid var(--gold-soft);
+      border-top: 11px solid transparent;
+      border-bottom: 11px solid transparent;
+      margin-left: 3px;
+      filter: drop-shadow(0 0 5px rgba(215,183,114,0.45));
+      position: relative;
+      z-index: 1;
+    }
+
+    .result-screen::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 4px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 999px;
+      filter: blur(1px);
+    }
+
+    .task {
+      margin-top: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 10px 10px;
+      min-height: 78px;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.45;
+    }
+
+    .arrow {
+      position: absolute;
+      right: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-left: 18px solid var(--gold);
+      z-index: 2;
+    }
+
+    .step:last-child .arrow { display: none; }
+
+    @media (max-width: 980px) {
+      .track {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+      }
+      .arrow { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .track {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Ecos del Atlántico</div>
+      <h1>Proceso general</h1>
+      <p class="sub">Resumen visual del trabajo: cada paso incluye los roles implicados y la función que cumplen dentro del proceso.</p>
+    </header>
+
+    <section class="process-box">
+      <div class="track">
+        <article class="step">
+          <div class="step-head">
+            <div class="step-tag">Paso 1</div>
+          </div>
+
+          <div class="person">
+            <div class="avatar">
+              <div class="head"></div>
+              <div class="baton"></div>
+              <div class="score"></div>
+              <div class="arm-left"></div>
+              <div class="arm-right"></div>
+              <div class="body"></div>
+              <div class="legs"></div>
+            </div>
+            <div class="person-name">Director</div>
+          </div>
+
+          <div class="person">
+            <div class="avatar alt long-hair">
+              <div class="hair hair-blonde"></div>
+              <div class="head"></div>
+              <div class="guitar" aria-hidden="true">
+                <svg viewBox="-1 -2 66 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Guitarra clásica">
+                  <defs>
+                    <linearGradient id="g-body" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#c49a6b"/>
+                      <stop offset="18%" stop-color="#b0804a"/>
+                      <stop offset="38%" stop-color="#8e5c32"/>
+                      <stop offset="62%" stop-color="#6f3d20"/>
+                      <stop offset="100%" stop-color="#4a2515"/>
+                    </linearGradient>
+                    <linearGradient id="g-neck" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#9a6a3e"/>
+                      <stop offset="50%" stop-color="#6e3e22"/>
+                      <stop offset="100%" stop-color="#5a2f18"/>
+                    </linearGradient>
+                    <linearGradient id="g-head" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#5a2f18"/>
+                      <stop offset="50%" stop-color="#7d4a2a"/>
+                      <stop offset="100%" stop-color="#4a2312"/>
+                    </linearGradient>
+                    <radialGradient id="g-rosette" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#080302"/>
+                      <stop offset="42%" stop-color="#0d0704"/>
+                      <stop offset="43.5%" stop-color="#5e3a1e"/>
+                      <stop offset="46%" stop-color="#e8c99a"/>
+                      <stop offset="48.5%" stop-color="#7a4a28"/>
+                      <stop offset="51%" stop-color="#e8c99a"/>
+                      <stop offset="53.5%" stop-color="#7a4a28"/>
+                      <stop offset="56%" stop-color="#e8c99a"/>
+                      <stop offset="58.5%" stop-color="#5e3a1e"/>
+                      <stop offset="61%" stop-color="#d9b07a"/>
+                    </radialGradient>
+                  </defs>
+                  <!-- Cuerpo con cintura marcada -->
+                  <path d="M30.5 9.2 C24.2 3.2, 12.5 -0.8, 3.2 4.2 C0.6 5.7, -0.6 9.6, 4.0 14 C-0.6 18.4, 0.6 22.3, 3.2 23.8 C12.5 28.8, 24.2 24.8, 30.5 18.8 Z" fill="url(#g-body)" stroke="#2f1a0c" stroke-width="0.85" stroke-linejoin="round"/>
+                  <!-- Brillo tapa -->
+                  <ellipse cx="10.5" cy="8.2" rx="7.5" ry="4" fill="rgba(255,230,175,0.19)"/>
+                  <ellipse cx="9.5" cy="19.5" rx="5" ry="2.2" fill="rgba(0,0,0,0.12)"/>
+                  <!-- Rosetón y boca -->
+                  <circle cx="14.2" cy="14" r="6.35" fill="url(#g-rosette)" stroke="#3e2815" stroke-width="0.35"/>
+                  <circle cx="14.2" cy="14" r="3.9" fill="#050201" stroke="#1e0f08" stroke-width="0.55"/>
+                  <circle cx="13.2" cy="12.6" r="0.9" fill="rgba(255,255,255,0.10)"/>
+                  <!-- Puente -->
+                  <rect x="3.2" y="12.1" width="7.8" height="3.8" rx="0.75" fill="#f1dfc2" stroke="#2f1a0c" stroke-width="0.5"/>
+                  <rect x="3.2" y="12.1" width="7.8" height="1.1" rx="0.35" fill="rgba(255,255,255,0.32)"/>
+                  <rect x="4.0" y="13.65" width="6.2" height="0.75" rx="0.2" fill="#3a1f0f"/>
+                  <!-- Cordal / pines -->
+                  <g fill="#1a0d06" opacity="0.9">
+                    <circle cx="4.8" cy="14" r="0.45"/><circle cx="6.4" cy="14" r="0.45"/><circle cx="8.0" cy="14" r="0.45"/>
+                    <circle cx="9.6" cy="14" r="0.45"/>
+                  </g>
+                  <!-- Mástil -->
+                  <rect x="30.5" y="10.1" width="22.2" height="7.8" rx="0.7" fill="url(#g-neck)" stroke="#2f1a0c" stroke-width="0.7"/>
+                  <!-- Diapasón claro entre trastes -->
+                  <rect x="30.5" y="10.5" width="22.2" height="1.6" rx="0.3" fill="rgba(255,255,255,0.06)"/>
+                  <!-- Trastes -->
+                  <g stroke="#d6d6d6" stroke-width="0.55" stroke-linecap="round" opacity="0.92">
+                    <line x1="35.0" y1="10.1" x2="35.0" y2="17.9"/>
+                    <line x1="39.6" y1="10.1" x2="39.6" y2="17.9"/>
+                    <line x1="44.2" y1="10.1" x2="44.2" y2="17.9"/>
+                    <line x1="48.8" y1="10.1" x2="48.8" y2="17.9"/>
+                  </g>
+                  <!-- Cejuela -->
+                  <rect x="30.5" y="10.1" width="1.0" height="7.8" rx="0.25" fill="#f5e9d4" stroke="#2f1a0c" stroke-width="0.35"/>
+                  <!-- Puntos traste -->
+                  <circle cx="37.3" cy="14" r="0.75" fill="rgba(255,255,255,0.62)" stroke="rgba(0,0,0,0.18)" stroke-width="0.2"/>
+                  <circle cx="42.0" cy="14" r="0.75" fill="rgba(255,255,255,0.62)" stroke="rgba(0,0,0,0.18)" stroke-width="0.2"/>
+                  <!-- Clavijero -->
+                  <path d="M52.7 9.0 L62.2 7.1 L62.2 20.9 L52.7 19.0 Z" fill="url(#g-head)" stroke="#2f1a0c" stroke-width="0.7" stroke-linejoin="round"/>
+                  <path d="M52.7 9.0 L58.5 9.9 L58.5 18.1 L52.7 19.0 Z" fill="rgba(0,0,0,0.10)"/>
+                  <!-- Clavijas 3+3 -->
+                  <g stroke="#2a2a2a" stroke-width="0.35">
+                    <g fill="#e9e9e9">
+                      <circle cx="54.8" cy="8.6" r="1.15"/><circle cx="57.6" cy="8.15" r="1.15"/><circle cx="60.4" cy="7.7" r="1.15"/>
+                      <circle cx="54.8" cy="19.4" r="1.15"/><circle cx="57.6" cy="19.85" r="1.15"/><circle cx="60.4" cy="20.3" r="1.15"/>
+                    </g>
+                    <g fill="#b0b0b0">
+                      <rect x="54.3" y="9.4" width="1.0" height="1.9" rx="0.3"/><rect x="57.1" y="8.95" width="1.0" height="1.9" rx="0.3"/><rect x="59.9" y="8.5" width="1.0" height="1.9" rx="0.3"/>
+                      <rect x="54.3" y="16.7" width="1.0" height="1.9" rx="0.3"/><rect x="57.1" y="17.15" width="1.0" height="1.9" rx="0.3"/><rect x="59.9" y="17.6" width="1.0" height="1.9" rx="0.3"/>
+                    </g>
+                    <g fill="#3a3a3a">
+                      <circle cx="54.8" cy="8.6" r="0.32"/><circle cx="57.6" cy="8.15" r="0.32"/><circle cx="60.4" cy="7.7" r="0.32"/>
+                      <circle cx="54.8" cy="19.4" r="0.32"/><circle cx="57.6" cy="19.85" r="0.32"/><circle cx="60.4" cy="20.3" r="0.32"/>
+                    </g>
+                  </g>
+                  <!-- Cuerdas 6 - por encima de todo -->
+                  <g stroke-linecap="round" fill="none">
+                    <line x1="4.0" y1="10.45" x2="61.8" y2="10.45" stroke="#f7eee0" stroke-width="0.42" opacity="0.98"/>
+                    <line x1="4.0" y1="11.75" x2="61.8" y2="11.75" stroke="#f7eee0" stroke-width="0.42" opacity="0.98"/>
+                    <line x1="4.0" y1="13.05" x2="61.8" y2="13.05" stroke="#ececec" stroke-width="0.48" opacity="0.98"/>
+                    <line x1="4.0" y1="14.35" x2="61.8" y2="14.35" stroke="#ececec" stroke-width="0.48" opacity="0.98"/>
+                    <line x1="4.0" y1="15.65" x2="61.8" y2="15.65" stroke="#d8c9ad" stroke-width="0.54" opacity="0.97"/>
+                    <line x1="4.0" y1="16.95" x2="61.8" y2="16.95" stroke="#d8c9ad" stroke-width="0.54" opacity="0.97"/>
+                  </g>
+                  <!-- Sombra boca -->
+                  <ellipse cx="14.2" cy="14" rx="3.9" ry="3.9" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="0.35"/>
+                </svg>
+              </div>
+              <div class="mouth"></div>
+              <div class="notes">
+                <span class="note n1"></span>
+                <span class="note n2"></span>
+              </div>
+              <div class="arm-left"></div>
+              <div class="arm-right"></div>
+              <div class="body"></div>
+              <div class="legs"></div>
+            </div>
+            <div class="person-name">Guías</div>
+          </div>
+
+          <div class="task">
+            Preparan la partitura y graban guitarras y voces guía para marcar la base musical del repertorio.
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+        </article>
+
+        <article class="step">
+          <div class="step-head">
+            <div class="step-tag">Paso 2</div>
+          </div>
+
+          <div class="person">
+            <div class="avatar alt2">
+              <div class="head"></div>
+              <div class="screen"></div>
+              <div class="keyboard"></div>
+              <div class="arm-left"></div>
+              <div class="arm-right"></div>
+              <div class="body"></div>
+              <div class="legs"></div>
+            </div>
+            <div class="person-name">Webmaster</div>
+          </div>
+
+          <div class="task">
+            Limpia, sincroniza y organiza la web para publicar las fichas, guías y materiales del repertorio.
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+        </article>
+
+        <article class="step">
+          <div class="step-head">
+            <div class="step-tag">Paso 3</div>
+          </div>
+
+          <div class="choir" aria-label="Coro con múltiples cantantes">
+            <div class="choir-row top">
+              <div class="avatar mini">
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n1"></span><span class="note n2"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+              <div class="avatar mini alt long-hair">
+                <div class="hair hair-black"></div>
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n2"></span><span class="note n3"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+              <div class="avatar mini alt2">
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n1"></span><span class="note n2"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+            </div>
+            <div class="choir-row middle">
+              <div class="avatar mini alt long-hair">
+                <div class="hair hair-red"></div>
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n1"></span><span class="note n2"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+              <div class="avatar alt3 long-hair">
+                <div class="hair hair-brown"></div>
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n1"></span><span class="note n2"></span><span class="note n3"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+              <div class="avatar mini alt2">
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n2"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+            </div>
+            <div class="choir-row bottom">
+              <div class="avatar mini alt3 long-hair">
+                <div class="hair hair-light"></div>
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n1"></span><span class="note n2"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+              <div class="avatar mini">
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n1"></span><span class="note n2"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+              <div class="avatar mini alt long-hair">
+                <div class="hair hair-brown"></div>
+                <div class="head"></div>
+                <div class="mouth"></div>
+                <div class="notes"><span class="note n2"></span><span class="note n3"></span></div>
+                <div class="arm-left"></div><div class="arm-right"></div><div class="body"></div><div class="legs"></div>
+              </div>
+            </div>
+          </div>
+          <div class="person-name" style="margin-top:2px;">Coro</div>
+
+          <div class="task">
+            Cada cantante graba su interpretación y envía el audio para que se recopile el material final.
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+        </article>
+
+        <article class="step">
+          <div class="step-head">
+            <div class="step-tag">Paso 4</div>
+          </div>
+
+          <div class="person">
+            <div class="avatar">
+              <div class="head"></div>
+              <div class="prop-bits" aria-label="Ficheros digitales"><span>1</span><span>0</span><span>1</span><span>0</span><span>1</span><span>0</span><span>1</span><span>0</span><span>1</span><span>0</span></div>
+              <div class="prop-vinyl" aria-label="Disco de vinilo"></div>
+              <div class="arm-left"></div>
+              <div class="arm-right"></div>
+              <div class="body"></div>
+              <div class="legs"></div>
+            </div>
+            <div class="person-name">Editor musical</div>
+          </div>
+
+          <div class="person">
+            <div class="avatar alt long-hair">
+              <div class="hair hair-black"></div>
+              <div class="head"></div>
+              <div class="prop-bits" aria-label="Ficheros digitales"><span>1</span><span>0</span><span>1</span><span>1</span><span>0</span><span>1</span><span>0</span><span>1</span><span>0</span><span>1</span></div>
+              <div class="prop-film" aria-label="Pelicula nitrato"></div>
+              <div class="arm-left"></div>
+              <div class="arm-right"></div>
+              <div class="body"></div>
+              <div class="legs"></div>
+            </div>
+            <div class="person-name">Editor audiovisual</div>
+          </div>
+
+          <div class="task">
+            Ajusta la edición musical y compone la versión audiovisual final para cerrar el proyecto.
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+        </article>
+
+        <article class="step">
+          <div class="step-head">
+            <div class="step-tag">Resultado</div>
+          </div>
+
+          <div class="result-object" aria-label="Proyecto listo para reproducir">
+            <div class="result-screen">
+              <div class="result-play"></div>
+            </div>
+          </div>
+
+          <div class="task">
+            Se reúne la base musical, las grabaciones del coro y la edición final para dejar la pieza lista para compartir.
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
