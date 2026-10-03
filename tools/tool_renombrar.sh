@@ -97,6 +97,63 @@ find "$TARGET_DIR" -depth -name ".*" -prune -o \( -name "* *" -o -name "*[áéí
 done
 
 # Leer el total de cambios desde el archivo temporal del contador
+# (la fase de guias lo retoma y sigue acumulando)
+
+if [ -d "$TARGET_DIR/songs" ]; then
+    echo "Corrigiendo nombres de guias (guia_N_voz_V.m4a) en: $TARGET_DIR/songs"
+    echo "--------------------------------------------------"
+
+    # Retomar el contador acumulado en la fase anterior (cada while es un subshell)
+    CONTADOR=$(cat /tmp/script_count.tmp 2>/dev/null || echo 0)
+
+    find "$TARGET_DIR/songs" -mindepth 3 -maxdepth 3 -type d -name "voz*" 2>/dev/null | sort | while read -r voz_dir; do
+
+        # Saltar rutas ocultas
+        if [[ "$voz_dir" =~ /\. ]]; then
+            continue
+        fi
+
+        voz_base=$(basename "$voz_dir")
+        ficha_base=$(basename "$(dirname "$voz_dir")")
+
+        [[ "$ficha_base" =~ ^ficha([0-9]+)$ ]] || continue
+        ficha_num="${BASH_REMATCH[1]}"
+        [[ "$voz_base" =~ ^voz([0-9]+)$ ]] || continue
+        voz_num="${BASH_REMATCH[1]}"
+
+        correcto="guia_${ficha_num}_voz_${voz_num}.m4a"
+
+        # Si ya existe el nombre correcto, no hay nada que hacer
+        if [ -f "$voz_dir/$correcto" ]; then
+            continue
+        fi
+
+        # Candidatos: otros .m4a en la carpeta (insensible a mayusculas)
+        mapfile -t candidatos < <(find "$voz_dir" -maxdepth 1 -type f -iname "*.m4a" ! -name "$correcto")
+
+        if [ "${#candidatos[@]}" -eq 0 ]; then
+            continue
+        fi
+
+        if [ "${#candidatos[@]}" -gt 1 ]; then
+            echo "⚠️ Varios m4a en $voz_dir, no se toca (elegir a mano):"
+            printf '   - %s\n' "${candidatos[@]}"
+            continue
+        fi
+
+        origen="${candidatos[0]}"
+        if [ "$DRY_RUN" = true ] || mv "$origen" "$voz_dir/$correcto" 2>/dev/null; then
+            echo "De: $origen" >> "$LOG_FILE"
+            echo "A:  $voz_dir/$correcto" >> "$LOG_FILE"
+            echo "--------------------------------------------------" >> "$LOG_FILE"
+
+            ((CONTADOR++))
+            echo "$CONTADOR" > /tmp/script_count.tmp
+        fi
+    done
+fi
+
+# Leer el total de cambios desde el archivo temporal del contador
 TOTAL_CAMBIOS=$(cat /tmp/script_count.tmp 2>/dev/null || echo 0)
 rm -f /tmp/script_count.tmp
 

@@ -42,9 +42,9 @@ for song_root in "${song_roots[@]}"; do
     # 1. Comprobar guitarra*.mp3 donde * coincide con el número del folder
     guitarra_file="$ficha_path/guitarra${ficha_num}.mp3"
     if [ -f "$guitarra_file" ]; then
-        echo "  [OK] Archivo encontrado: $guitarra_file"
+        echo "  [OK] (ficha${ficha_num}) Archivo encontrado: $guitarra_file"
     else
-        echo "  [ERROR] Falta archivo esperado: $guitarra_file"
+        echo "  [ERROR] (ficha${ficha_num}) Falta archivo esperado: guitarra${ficha_num}.mp3 en $ficha_path"
         ficha_ok=0
     fi
     
@@ -53,7 +53,7 @@ for song_root in "${song_roots[@]}"; do
         voz_dir="$ficha_path/voz$v"
         
         if [ ! -d "$voz_dir" ]; then
-            echo "  [ERROR] Falta el directorio: $voz_dir"
+            echo "  [ERROR] (ficha${ficha_num} voz${v}) Falta el directorio: $voz_dir"
             ficha_ok=0
             continue
         fi
@@ -61,18 +61,35 @@ for song_root in "${song_roots[@]}"; do
         # 2a. Comprobar voz%.html dentro de voz%
         voz_html="$voz_dir/voz${v}.html"
         if [ -f "$voz_html" ]; then
-            echo "  [OK] Encontrado: $voz_html"
+            echo "  [OK] (ficha${ficha_num} voz${v}) Encontrado: $voz_html"
         else
-            echo "  [ERROR] Falta archivo: $voz_html"
+            echo "  [ERROR] (ficha${ficha_num} voz${v}) Falta archivo: voz${v}.html en $voz_dir (hay: $(ls "$voz_dir" 2>/dev/null | tr '\n' ' '))"
             ficha_ok=0
         fi
         
-        # 2b. Comprobar particella_*_voz% donde * es número y coincide con ficha_num, y % es v
+        # 2b. Comprobar particella_*_voz% (PDF fuente: solo AVISO si falta, el HTML usa el PNG)
         particella_file="$voz_dir/particella_${ficha_num}_voz${v}.pdf"
         if [ -f "$particella_file" ]; then
-            echo "  [OK] Encontrado: $particella_file"
+            echo "  [OK] (ficha${ficha_num} voz${v}) Encontrado: $particella_file"
         else
-            echo "  [ERROR] Falta archivo: $particella_file"
+            echo "  [AVISO] (ficha${ficha_num} voz${v}) Falta archivo: particella_${ficha_num}_voz${v}.pdf en $voz_dir (hay: $(ls "$voz_dir" 2>/dev/null | tr '\n' ' '))"
+        fi
+
+        # 2c. Comprobar PNG derivado de la particella (lo que muestra el HTML)
+        particella_png="$voz_dir/particella_${ficha_num}_voz${v}.png"
+        if [ -f "$particella_png" ]; then
+            echo "  [OK] (ficha${ficha_num} voz${v}) Encontrado: $particella_png"
+        else
+            echo "  [ERROR] (ficha${ficha_num} voz${v}) Falta archivo: particella_${ficha_num}_voz${v}.png en $voz_dir (hay: $(ls "$voz_dir" 2>/dev/null | tr '\n' ' '))"
+            ficha_ok=0
+        fi
+
+        # 2d. Comprobar guia con numero de ficha y voz (pista vocal del reproductor)
+        guia_file="$voz_dir/guia_${ficha_num}_voz_${v}.m4a"
+        if [ -f "$guia_file" ]; then
+            echo "  [OK] (ficha${ficha_num} voz${v}) Encontrado: $guia_file"
+        else
+            echo "  [ERROR] (ficha${ficha_num} voz${v}) Falta archivo: guia_${ficha_num}_voz_${v}.m4a en $voz_dir (hay: $(ls "$voz_dir" 2>/dev/null | tr '\n' ' '))"
             ficha_ok=0
         fi
     done

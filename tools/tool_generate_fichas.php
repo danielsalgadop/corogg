@@ -27,8 +27,9 @@ declare(strict_types=1);
  *   php tool_generate_fichas.php
  *   php tool_generate_fichas.php --ficha=3 --voz=2
  *   php tool_generate_fichas.php --cancion=cant-help-falling-in-love
- *   php tool_generate_fichas.php --force
  *   php tool_generate_fichas.php --dry-run
+ *
+ * Siempre sobrescribe los HTML generados (no necesita --force).
  *
  * Nota: los indices solo se generan en ejecuciones completas de la cancion
  * (sin --ficha ni --voz).
@@ -60,6 +61,8 @@ try {
     $requestedFicha = LibCode::value($args, 'ficha', '/^\d+$/', 'Ficha');
     $requestedVoice = LibCode::value($args, 'voz', '/^\d+$/', 'Voz');
     $songSlug = LibCode::value($args, 'cancion', '/^[a-z0-9-]+$/', 'Cancion');
+    // Siempre regenera sin pedir --force (se acepta por compatibilidad, pero se ignora).
+    $force = true;
 } catch (InvalidArgumentException $exception) {
     fwrite(STDERR, $exception->getMessage() . "\n");
     exit(1);
@@ -151,12 +154,16 @@ function createVoicePage(
 ): string {
     $songTitle = "Can't Help Falling in Love";
     $voiceLabel = "voz{$voiceNumber}";
-    $particellaMarkup = createParticellaMarkup($particella);
+    $particellaMarkup = createParticellaMarkup($particella, $fichaNumber, $voiceNumber);
     $navMarkup = createFichaNav($fichaNumber, $voiceNumber, $prevFicha, $nextFicha);
     $guideTrack = $voicePath === ''
         ? ''
         : "    { id: '{$voiceLabel}', nombre: '🎵 {$voiceLabel}', url: '{$voicePath}' }";
     $tracksSeparator = $guideTrack === '' ? '' : ",\n";
+    $guiaEsperada = LibCode::escape("guia_{$fichaNumber}_voz_{$voiceNumber}.m4a");
+    $guiaPendiente = $voicePath === ''
+        ? "<p class=\"guia-pendiente\">Guía pendiente de incorporar: {$guiaEsperada}</p>\n"
+        : '';
 
     return <<<HTML
 <!DOCTYPE html>
@@ -193,7 +200,7 @@ function createVoicePage(
     </div>
 
     <div id="mezclador-pistas"></div>
-</div>
+    {$guiaPendiente}</div>
 
 <script>
 const fuentesPistas = [
@@ -330,10 +337,11 @@ function findGuide(string $voiceDirectory, int $fichaNumber, int $voiceNumber): 
     return $candidates === [] ? null : basename($candidates[0]);
 }
 
-function createParticellaMarkup(?string $particella): string
+function createParticellaMarkup(?string $particella, int $fichaNumber, int $voiceNumber): string
 {
     if ($particella === null) {
-        return '<p class="particella-pendiente">Particella pendiente de incorporar.</p>';
+        $esperada = htmlspecialchars("particella_{$fichaNumber}_voz{$voiceNumber}.png", ENT_QUOTES, 'UTF-8');
+        return "<p class=\"particella-pendiente\">Particella pendiente de incorporar: {$esperada}</p>";
     }
 
     $safeName = htmlspecialchars($particella, ENT_QUOTES, 'UTF-8');
