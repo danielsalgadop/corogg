@@ -153,6 +153,66 @@ if [ -d "$TARGET_DIR/songs" ]; then
     done
 fi
 
+if [ -d "$TARGET_DIR/songs" ]; then
+    echo "Corrigiendo nombres de particellas en: $TARGET_DIR/songs"
+    echo "--------------------------------------------------"
+
+    CONTADOR=$(cat /tmp/script_count.tmp 2>/dev/null || echo 0)
+
+    while IFS= read -r -d '' voz_dir; do
+        [[ "$voz_dir" =~ /\. ]] && continue
+
+        voz_base=$(basename "$voz_dir")
+        ficha_base=$(basename "$(dirname "$voz_dir")")
+        [[ "$ficha_base" =~ ^ficha([0-9]+)$ ]] || continue
+        ficha_num="${BASH_REMATCH[1]}"
+        [[ "$voz_base" =~ ^voz([0-9]+)$ ]] || continue
+        voz_num="${BASH_REMATCH[1]}"
+
+        for extension in png pdf; do
+            correcto="particella_${ficha_num}_voz${voz_num}.${extension}"
+            destino="$voz_dir/$correcto"
+            [[ -f "$destino" ]] && continue
+
+            mapfile -d '' -t candidatos < <(
+                find "$voz_dir" -maxdepth 1 -type f -iname "*.$extension" -print0
+            )
+            particellas=()
+
+            for candidato in "${candidatos[@]}"; do
+                tipo=$(php -r 'require $argv[1]; echo LibCode::detectFileType($argv[2]) ?? "";' \
+                    "$PWD/lib_code.php" "$(basename "$candidato")" 2>/dev/null)
+                if [ "$tipo" = "particella" ]; then
+                    particellas+=("$candidato")
+                fi
+            done
+
+            if [ "${#particellas[@]}" -gt 1 ]; then
+                echo "⚠️ Varias particellas .$extension en $voz_dir, no se toca (elegir a mano):"
+                printf '   - %s\n' "${particellas[@]}"
+                continue
+            fi
+
+            [ "${#particellas[@]}" -eq 1 ] || continue
+            origen="${particellas[0]}"
+
+            if [ -e "$destino" ]; then
+                echo "⚠️ Ya existe el destino $destino, no se renombra $origen"
+                continue
+            fi
+
+            if [ "$DRY_RUN" = true ] || mv "$origen" "$destino" 2>/dev/null; then
+                echo "De: $origen" >> "$LOG_FILE"
+                echo "A:  $destino" >> "$LOG_FILE"
+                echo "--------------------------------------------------" >> "$LOG_FILE"
+
+                ((CONTADOR++))
+                echo "$CONTADOR" > /tmp/script_count.tmp
+            fi
+        done
+    done < <(find "$TARGET_DIR/songs" -mindepth 3 -maxdepth 3 -type d -name "voz*" -print0 | sort -z)
+fi
+
 # Leer el total de cambios desde el archivo temporal del contador
 TOTAL_CAMBIOS=$(cat /tmp/script_count.tmp 2>/dev/null || echo 0)
 rm -f /tmp/script_count.tmp

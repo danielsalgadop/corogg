@@ -113,6 +113,58 @@ final class LibCode
     }
 
     /**
+     * Indica si dos cadenas son suficientemente parecidas.
+     *
+     * El umbral es una proporción entre 0.0 (cualquier diferencia) y 1.0
+     * (coincidencia exacta). La comparación está pensada para nombres de
+     * archivo y usa distancia Levenshtein.
+     */
+    public static function isStringSimilar(string $value, string $candidate, float $threshold = 0.8): bool
+    {
+        if ($threshold < 0.0 || $threshold > 1.0) {
+            throw new InvalidArgumentException('El umbral debe estar entre 0.0 y 1.0.');
+        }
+
+        $value = strtolower($value);
+        $candidate = strtolower($candidate);
+        $longestLength = max(strlen($value), strlen($candidate));
+
+        if ($longestLength === 0) {
+            return true;
+        }
+
+        $similarity = 1 - (levenshtein($value, $candidate) / $longestLength);
+        return $similarity >= $threshold;
+    }
+
+    /**
+     * Detecta la categoría de un fichero según su nombre.
+     *
+     * @return 'voz'|'particella'|'guitarra'|null
+     */
+    public static function detectFileType(string $filename, float $threshold = 0.8): ?string
+    {
+        if ($threshold < 0.0 || $threshold > 1.0) {
+            throw new InvalidArgumentException('El umbral debe estar entre 0.0 y 1.0.');
+        }
+
+        $basename = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+        preg_match_all('/[a-z]+/i', $basename, $matches);
+        $tokens = $matches[0];
+        $fileTypes = ['particella', 'guitarra', 'voz'];
+
+        foreach ($fileTypes as $type) {
+            foreach ($tokens as $token) {
+                if (self::isStringSimilar($token, $type, $threshold)) {
+                    return $type;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Escribe un archivo respetando la bandera --force.
      *
      * @return 'generated'|'skipped'|'dry-run'
