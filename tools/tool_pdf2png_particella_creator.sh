@@ -12,10 +12,10 @@ find songs -mindepth 2 -type d -name "ficha*" | while read -r carpeta; do
         base_name="${pdf%.pdf}"
         output_png="${base_name}.png"
         
-        if [ -f "$output_png" ]; then
-            echo " -> Omitiendo, ya existe: $output_png"
-            continue
-        fi
+#        if [ -f "$output_png" ]; then
+ #           echo " -> Omitiendo, ya existe: $output_png"
+  #          continue
+   #     fi
 
         echo " -> Recortando: $pdf"
 

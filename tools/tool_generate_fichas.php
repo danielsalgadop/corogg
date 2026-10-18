@@ -23,13 +23,23 @@ declare(strict_types=1);
  * etiquetas first/middle/last). Si la cancion no esta en site.json o le
  * faltan datos, los indices se omiten con un aviso.
  *
+ * Convierte a PNG los PDF de particella de cada voz procesada con pdftoppm
+ * (mismos parametros de recorte que tool_pdf2png_particella_creator.sh,
+ * salvo la altura de la ficha 1, un 30% mayor: 520 px frente a 400 px).
+ * La salida siempre lleva el nombre canonico particella_{ficha}_voz{voz}.png,
+ * igual que el PDF canonico particella_{ficha}_voz{voz}.pdf: si el PDF de
+ * origen tiene otro nombre, se convierte igual y se escribe con el nombre
+ * canonico. Solo se regenera el PNG si falta o es mas antiguo que su PDF
+ * (--force obliga a regenerarlo). Sin pdftoppm se avisa y se omite.
+ *
  * Uso:
  *   php tool_generate_fichas.php
  *   php tool_generate_fichas.php --ficha=3 --voz=2
  *   php tool_generate_fichas.php --cancion=cant-help-falling-in-love
  *   php tool_generate_fichas.php --dry-run
  *
- * Siempre sobrescribe los HTML generados (no necesita --force).
+ * Siempre sobrescribe los HTML generados; --force solo afecta a los PNG de
+ * particella, para regenerar los que ya esten al dia.
  *
  * Nota: los indices solo se generan en ejecuciones completas de la cancion
  * (sin --ficha ni --voz).
@@ -38,6 +48,11 @@ declare(strict_types=1);
 $root = dirname(__DIR__);
 
 require_once $root . '/lib_code.php';
+
+// Recorte de los PNG de particella: tamano en pixeles y resolucion de salida.
+const PARTICELLA_CROP_WIDTH = 2000;
+const PARTICELLA_CROP_HEIGHT = 400;
+const PARTICELLA_CROP_DPI = 150;
 
 $configPath = $root . '/config/app.json';
 if (!is_file($configPath)) {
@@ -61,7 +76,9 @@ try {
     $requestedFicha = LibCode::value($args, 'ficha', '/^\d+$/', 'Ficha');
     $requestedVoice = LibCode::value($args, 'voz', '/^\d+$/', 'Voz');
     $songSlug = LibCode::value($args, 'cancion', '/^[a-z0-9-]+$/', 'Cancion');
-    // Siempre regenera sin pedir --force (se acepta por compatibilidad, pero se ignora).
+    // Los HTML se regeneran siempre; --force se reserva para los PNG de
+    // particella, donde obliga a convertirlos aunque esten al dia.
+    $forcePng = $force;
     $force = true;
 } catch (InvalidArgumentException $exception) {
     fwrite(STDERR, $exception->getMessage() . "\n");
@@ -82,11 +99,17 @@ if ($songSlug === null) {
 
 $generated = 0;
 $skipped = 0;
+$pngsGenerated = 0;
 $songRoot = $root . '/songs/' . $songSlug;
 
 if (!is_dir($songRoot)) {
     fwrite(STDERR, "No existe la carpeta de la cancion: {$songRoot}\n");
     exit(1);
+}
+
+$pdftoppmAvailable = isPdftoppmAvailable();
+if (!$pdftoppmAvailable) {
+    fwrite(STDERR, "Aviso: pdftoppm no disponible; no se generaran los PNG de particellas.\n");
 }
 
 for ($fichaNumber = 1; $fichaNumber <= $totalFichas; $fichaNumber++) {
@@ -100,6 +123,14 @@ for ($fichaNumber = 1; $fichaNumber <= $totalFichas; $fichaNumber++) {
         }
 
         $voiceDirectory = $songRoot . "/ficha{$fichaNumber}/voz{$voiceNumber}";
+        $pngsGenerated += renderParticellaPng(
+            $voiceDirectory,
+            $fichaNumber,
+            $voiceNumber,
+            $dryRun,
+            $forcePng,
+            $pdftoppmAvailable
+        );
         $particella = findParticella($voiceDirectory, $fichaNumber, $voiceNumber);
         $guideName = findGuide($voiceDirectory, $fichaNumber, $voiceNumber);
         $outputPath = $voiceDirectory . "/voz{$voiceNumber}.html";
@@ -140,7 +171,7 @@ if ($requestedFicha === null && $requestedVoice === null) {
     $skipped += $indexSkipped;
 }
 
-echo "Finalizado: {$generated} generado(s), {$skipped} conservado(s).\n";
+echo "Finalizado: {$generated} generado(s), {$skipped} conservado(s), {$pngsGenerated} PNG de particella(s).\n";
 
 function createVoicePage(
     int $fichaNumber,
@@ -317,13 +348,23 @@ function findParticella(string $voiceDirectory, int $fichaNumber, int $voiceNumb
 
     $candidates = [];
     foreach (glob($voiceDirectory . '/*.{png,pdf}', GLOB_BRACE) ?: [] as $candidate) {
-        $candidateName = strtolower(basename($candidate));
-        if (str_contains($candidateName, 'particella') || str_contains($candidateName, 'partticella')) {
+        if (isParticellaFilename(basename($candidate))) {
             $candidates[] = $candidate;
         }
     }
 
     return $candidates === [] ? null : basename($candidates[0]);
+}
+
+/**
+ * Indica si el nombre de un archivo corresponde a una particella
+ * (mismo criterio para localizar la particella y para convertirla a PNG).
+ */
+function isParticellaFilename(string $filename): bool
+{
+    $name = strtolower($filename);
+
+    return str_contains($name, 'particella') || str_contains($name, 'partticella');
 }
 
 function findGuide(string $voiceDirectory, int $fichaNumber, int $voiceNumber): ?string
@@ -335,6 +376,102 @@ function findGuide(string $voiceDirectory, int $fichaNumber, int $voiceNumber): 
 
     $candidates = glob($voiceDirectory . '/*.m4a') ?: [];
     return $candidates === [] ? null : basename($candidates[0]);
+}
+
+function isPdftoppmAvailable(): bool
+{
+    $output = [];
+    $exitCode = 0;
+    exec('command -v pdftoppm 2>/dev/null', $output, $exitCode);
+
+    return $exitCode === 0 && $output !== [];
+}
+
+/**
+ * Genera el PNG de la particella de una voz con pdftoppm a partir de su PDF.
+ *
+ * El PNG siempre se escribe con el nombre canonico
+ * particella_{ficha}_voz{voz}.png, igual que el PDF canonico
+ * particella_{ficha}_voz{voz}.pdf: si en la carpeta existe el PDF canonico
+ * se usa ese como origen; si no, el unico PDF detectado como particella
+ * (aunque su nombre no sea el canonico, p. ej. exportaciones con el titulo
+ * de la cancion). Con varios PDF de origen no canonicos no se hace nada y
+ * se avisa, para no elegir a ciegas.
+ *
+ * @return int 1 si se genera el PNG, 0 si se omite.
+ */
+function renderParticellaPng(
+    string $voiceDirectory,
+    int $fichaNumber,
+    int $voiceNumber,
+    bool $dryRun,
+    bool $force,
+    bool $pdftoppmAvailable
+): int {
+    if (!$pdftoppmAvailable || !is_dir($voiceDirectory)) {
+        return 0;
+    }
+
+    $canonicalBase = "particella_{$fichaNumber}_voz{$voiceNumber}";
+    $canonicalPdf = $voiceDirectory . '/' . $canonicalBase . '.pdf';
+    $pngPath = $voiceDirectory . '/' . $canonicalBase . '.png';
+
+    if (is_file($canonicalPdf)) {
+        $pdf = $canonicalPdf;
+    } else {
+        $candidates = [];
+        foreach (glob($voiceDirectory . '/*.pdf') ?: [] as $candidate) {
+            if (isParticellaFilename(basename($candidate))) {
+                $candidates[] = $candidate;
+            }
+        }
+
+        if (count($candidates) > 1) {
+            fwrite(
+                STDERR,
+                "Aviso: varios PDF de particella en {$voiceDirectory}, no se genera {$canonicalBase}.png\n"
+            );
+            return 0;
+        }
+
+        if ($candidates === []) {
+            return 0;
+        }
+
+        $pdf = $candidates[0];
+    }
+
+    if (!$force && is_file($pngPath) && filemtime($pngPath) >= filemtime($pdf)) {
+        return 0;
+    }
+
+    if ($dryRun) {
+        echo "Se generaria: {$pngPath}\n";
+        return 1;
+    }
+
+    $outputBase = $voiceDirectory . '/' . $canonicalBase;
+    // La ficha 1 se recorta con un 30% mas de altura que el resto.
+    $cropHeight = $fichaNumber === 1 ? (int) round(PARTICELLA_CROP_HEIGHT * 1.3) : PARTICELLA_CROP_HEIGHT;
+    $command = sprintf(
+        'pdftoppm -png -singlefile -x 0 -y 0 -W %d -H %d -r %d %s %s 2>&1',
+        PARTICELLA_CROP_WIDTH,
+        $cropHeight,
+        PARTICELLA_CROP_DPI,
+        escapeshellarg($pdf),
+        escapeshellarg($outputBase)
+    );
+    $output = [];
+    $exitCode = 0;
+    exec($command, $output, $exitCode);
+
+    if ($exitCode !== 0 || !is_file($pngPath)) {
+        fwrite(STDERR, "Aviso: fallo al convertir {$pdf}\n");
+        return 0;
+    }
+
+    echo "Generado: {$pngPath}\n";
+    return 1;
 }
 
 function createParticellaMarkup(?string $particella, int $fichaNumber, int $voiceNumber): string
