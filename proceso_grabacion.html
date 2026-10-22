@@ -130,6 +130,186 @@
     .tips strong {
       color: var(--gold-soft);
     }
+
+    .scene {
+      position: relative;
+      width: 320px;
+      height: 220px;
+      margin: 24px auto 0;
+      transform: scale(0.9);
+    }
+
+    .computer {
+      position: absolute;
+      right: 12px;
+      bottom: 55px;
+      width: 150px;
+      height: 95px;
+    }
+
+    .screen {
+      width: 150px;
+      height: 95px;
+      background: #0b1220;
+      border: 4px solid #2a3b4a;
+      border-radius: 10px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+
+    .app-ui {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .app-bar {
+      height: 8px;
+      background: #d7b772;
+      border-radius: 4px;
+      width: 60%;
+    }
+
+    .app-track {
+      height: 6px;
+      background: rgba(158,203,240,0.5);
+      border-radius: 3px;
+      width: 100%;
+    }
+
+    .app-track.short { width: 70%; }
+
+    .base {
+      width: 60px;
+      height: 8px;
+      background: #2a3b4a;
+      border-radius: 4px;
+      margin: 6px auto 0;
+    }
+
+    .person {
+      position: absolute;
+      left: 12px;
+      bottom: 55px;
+      width: 90px;
+      height: 120px;
+    }
+
+    .head {
+      position: absolute;
+      top: 0;
+      left: 24px;
+      width: 46px;
+      height: 46px;
+      background: #e9b9c7;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .face {
+      position: absolute;
+      top: 18px;
+      right: 4px;
+      width: 14px;
+      height: 10px;
+      border-radius: 0 0 10px 10px;
+      background: #aa1515;
+    }
+
+    .headphones {
+      position: absolute;
+      top: -2px;
+      left: 0px;
+      width: 58px;
+      height: 24px;
+      border: 4px solid #d0d0d0;
+      border-bottom: none;
+      border-radius: 28px 28px 0 0;
+    }
+
+    .headphones::before,
+    .headphones::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      width: 12px;
+      height: 20px;
+      background: #d0d0d0;
+      border-radius: 4px;
+    }
+
+    .headphones::before { left: -14px; }
+    .headphones::after { right: -6px; }
+
+    .body {
+      position: absolute;
+      top: 40px;
+      left: 10px;
+      width: 70px;
+      height: 80px;
+      background: #1f3b5c;
+      border-radius: 16px 16px 8px 8px;
+      z-index: 1;
+    }
+
+    .arm {
+      position: absolute;
+      top: 52px;
+      width: 12px;
+      height: 50px;
+      background: #1f3b5c;
+      border-radius: 6px;
+    }
+
+    .arm-left {
+      left: 4px;
+      transform: rotate(10deg);
+    }
+
+    .arm-right {
+      right: 4px;
+      transform: rotate(-60deg);
+    }
+
+    .phone {
+      position: absolute;
+      right: 8px;
+      bottom: 65px;
+      width: 34px;
+      height: 62px;
+      background: #111625;
+      border: 3px solid #d7b772;
+      border-radius: 8px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+    }
+
+    .phone-screen {
+      margin: 6px;
+      height: 48px;
+      background: linear-gradient(180deg, #aa1515, #002868);
+      border-radius: 4px;
+    }
+
+    .cable-v {
+      position: absolute;
+      left: 35px;
+      bottom: 30px;
+      width: 3px;
+      height: 120px;
+      background: #d0d0d0;
+      z-index: 10;
+      border-radius: 2px;
+    }
+
+    .cable-svg {
+      position: absolute;
+      left: 35px;
+      bottom: 38px;
+      width: 130px;
+      height: 20px;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
@@ -147,11 +327,39 @@
 
   <section class="parallax-hero">
     <div class="hero-content">
-      <p class="eyebrow" data-i18n="pr_eyebrow">Grabación</p>
-      <h1 data-i18n="pr_title">Cómo grabar tu parte</h1>
-      <p class="sub" data-i18n="pr_sub">
-        Guía sencilla para que cada corista grabe su interpretación y la envíe para la producción final.
+      <p class="eyebrow">Grabación</p>
+      <h1>Cómo grabar tu parte</h1>
+      <p class="sub">
+        Guía sencilla para que cada corista grabe su interpretación y la envíe para la producción final. El resultado final es un vídeo.
       </p>
+
+      <div class="scene" aria-hidden="true">
+        <div class="computer">
+          <div class="screen">
+            <div class="app-ui">
+              <div class="app-bar"></div>
+              <div class="app-track"></div>
+              <div class="app-track"></div>
+              <div class="app-track short"></div>
+            </div>
+          </div>
+          <div class="base"></div>
+        </div>
+        <div class="person">
+          <div class="head">
+            <div class="headphones"></div>
+            <div class="face"></div>
+          </div>
+          <div class="body"></div>
+          <div class="arm arm-left"></div>
+          <div class="arm arm-right"></div>
+        </div>
+        <div class="cable-v"></div>
+        <svg class="cable-svg" viewBox="0 0 130 20" preserveAspectRatio="none"><path d="M0 10 Q16 0 32 10 T65 10 T97.5 10 T130 10" stroke="#d0d0d0" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+        <div class="phone">
+          <div class="phone-screen"></div>
+        </div>
+      </div>
     </div>
   </section>
 
