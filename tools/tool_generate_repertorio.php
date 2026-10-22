@@ -137,22 +137,25 @@ HTML;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$pageTitle} - {$brand}</title>
     <link rel="stylesheet" href="css.css">
+    <script src="js/i18n.js?v=4"></script>
 </head>
 <body>
     <nav>
         <a href="index.html" class="logo">
-            <span>🎼</span> {$brand}
+            <span>🎼</span> <span data-i18n="brand">{$brand}</span>
         </a>
         <ul>
-            <li><a href="ayuda.html" class="help-link">AYUDA</a></li>
+            <li><a href="songs/cant-help-falling-in-love/voces.html" data-i18n="nav_voces">Elegir voz</a></li>
+            <li><a href="ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
         </ul>
     </nav>
 
     <main class="selection-page repertory-page">
         <header class="selection-intro">
-            <p class="selection-kicker">{$brand}</p>
-            <h1>{$pageTitle}</h1>
-            <p>{$pageSubtitle}</p>
+        <p class="selection-kicker" data-i18n="brand">{$brand}</p>
+        <h1 data-i18n="repertorio_title">{$pageTitle}</h1>
+        <p data-i18n="repertorio_subtitle">{$pageSubtitle}</p>
         </header>
 
         <section class="song-grid" aria-label="Canciones disponibles">

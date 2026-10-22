@@ -41,7 +41,7 @@ function createVoicePage(
     <title>{$songTitle} - Ficha{$fichaNumber}/{$totalFichas} {$voiceLabel}</title>
 
     <script src="../../../../js/howler.core.js"></script>
-    <script src="../../../../js/i18n.js"></script>
+    <script src="../../../../js/i18n.js?v=4"></script>
     <link rel="stylesheet" href="../../../../css.css">
 </head>
 <body class="voice-{$voiceNumber}">
@@ -257,7 +257,7 @@ function createFichasIndexPage(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$fichasTitle} - {$safeBrand}</title>
     <link rel="stylesheet" href="../../css.css">
-    <script src="../../js/i18n.js"></script>
+    <script src="../../js/i18n.js?v=4"></script>
 </head>
 <body>
 
@@ -302,24 +302,21 @@ function createHelpPage(array $data): string
         if (isset($section['cta'])) {
             $ctaLabel = LibCode::escape($section['cta']['label']);
             $ctaHref = LibCode::escape($section['cta']['href']);
+            $sectionNumber = (string) $section['number'];
             $ctaHtml = <<<HTML
             <div style="margin-top:1rem;">
-                <a href="{$ctaHref}" class="btn-principal" style="display:inline-block;text-decoration:none;">{$ctaLabel}</a>
+                <a href="{$ctaHref}" class="btn-principal" style="display:inline-block;text-decoration:none;" data-i18n="help_section_{$sectionNumber}_cta">{$ctaLabel}</a>
             </div>
 HTML;
         }
 
+        $sectionNumber = (string) $section['number'];
         $sections .= <<<HTML
 
 
         <section class="help-section">
-            <h2>{$number}. {$sectionTitle}</h2>
-            <p>{$text}</p>{$ctaHtml}
-            <div class="help-video">
-                <div class="video-frame">
-                    <iframe src="{$videoUrl}" title="{$videoTitle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
-            </div>
+            <h2><span data-i18n="help_section_{$sectionNumber}_title">{$sectionTitle}</span></h2>
+            <p data-i18n="help_section_{$sectionNumber}_text">{$text}</p>{$ctaHtml}
         </section>
 HTML;
     }
@@ -332,7 +329,7 @@ HTML;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$title} - Ecos del Atlántico</title>
     <link rel="stylesheet" href="css.css">
-    <script src="js/i18n.js"></script>
+    <script src="js/i18n.js?v=4"></script>
 </head>
 <body>
     <nav>
@@ -348,8 +345,8 @@ HTML;
 
     <main class="help-content">
         <header class="help-intro">
-            <h1>{$title}</h1>
-            <p>{$intro}</p>
+            <h1 data-i18n="help_title">{$title}</h1>
+            <p data-i18n="help_intro">{$intro}</p>
         </header>{$sections}
     </main>
 </body>

@@ -1,12 +1,13 @@
 // App Descubre tu Voz - síntesis con Web Audio API, sin MP3
 // Solo 3 partes del coro: Voz 1 (aguda), Voz 2 (media), Voz 3 (grave)
+const LANG = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'es';
 const VOICES = [
   {
-    id:'voz1', nombre:'Voz 1', cat:'Aguda · línea clara',
-    low:60, high:84, color:'#dfb76c',
-    rangoTxt:'Do4 (C4) – Do6 (C6)', freqTxt:'261.6 Hz – 1046.5 Hz',
-    desc:'La línea más aguda. Lleva la melodía y empieza el recorrido.',
-    ejemplo:'Fichas: Repertorio → Voces → Voz 1'
+    id:'voz3', nombre:'Voz 3', cat:'Grave · base',
+    low:40, high:64, color:'#4ade80',
+    rangoTxt:'Mi2 (E2) – Mi4 (E4)', freqTxt:'82.4 Hz – 329.6 Hz',
+    desc:'El registro grave para completar el conjunto.',
+    ejemplo:'Fichas: Repertorio → Voces → Voz 3'
   },
   {
     id:'voz2', nombre:'Voz 2', cat:'Intermedia · armonía',
@@ -16,13 +17,21 @@ const VOICES = [
     ejemplo:'Fichas: Repertorio → Voces → Voz 2'
   },
   {
-    id:'voz3', nombre:'Voz 3', cat:'Grave · base',
-    low:40, high:64, color:'#4ade80',
-    rangoTxt:'Mi2 (E2) – Mi4 (E4)', freqTxt:'82.4 Hz – 329.6 Hz',
-    desc:'El registro grave para completar el conjunto.',
-    ejemplo:'Fichas: Repertorio → Voces → Voz 3'
+    id:'voz1', nombre:'Voz 1', cat:'Aguda · línea clara',
+    low:60, high:84, color:'#dfb76c',
+    rangoTxt:'Do4 (C4) – Do6 (C6)', freqTxt:'261.6 Hz – 1046.5 Hz',
+    desc:'La línea más aguda. Lleva la melodía y empieza el recorrido.',
+    ejemplo:'Fichas: Repertorio → Voces → Voz 1'
   },
 ];
+if (LANG === 'en') {
+  const TR = {
+    voz1: {nombre:'Voice 1', cat:'High · clear line', desc:'The highest line. Carries the melody and starts the journey.', ejemplo:'Sheets: Repertoire → Voices → Voice 1'},
+    voz2: {nombre:'Voice 2', cat:'Middle · harmony', desc:'The middle part that supports the harmony.', ejemplo:'Sheets: Repertoire → Voices → Voice 2'},
+    voz3: {nombre:'Voice 3', cat:'Low · base', desc:'The low register to complete the ensemble.', ejemplo:'Sheets: Repertoire → Voices → Voice 3'},
+  };
+  VOICES.forEach(v => { const t = TR[v.id]; if (t) Object.assign(v, t); });
+}
 
 const NOMBRES_ES = ['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
 const NOMBRES_EN = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
@@ -102,12 +111,13 @@ VOICES.forEach(v=>{
     <div class="cat">${v.cat}</div>
     <h3>${v.nombre}</h3>
     <div class="play-row">
-      <button class="chip" data-a="low">▶ Grave</button>
-      <button class="chip" data-a="mid">▶ Centro</button>
-      <button class="chip" data-a="high">▶ Agudo</button>
+      <button class="chip" data-a="low">▶ ${LANG==='en'?'Low':'Grave'}</button>
+      <button class="chip" data-a="mid">▶ ${LANG==='en'?'Mid':'Centro'}</button>
+      <button class="chip" data-a="high">▶ ${LANG==='en'?'High':'Agudo'}</button>
+      <button class="chip three" data-a="three">▶ ${LANG==='en'?'Hear all 3':'Oír los 3'}</button>
     </div>
     <div class="play-row">
-      <button class="chip three" data-a="three">▶ Oír los 3</button>
+      <button class="chip three" data-a="scale">▶ ${LANG==='en'?'Hear scale':'Oír escala'}</button>
     </div>`;
   el.querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{
@@ -116,13 +126,14 @@ VOICES.forEach(v=>{
       if(a==='mid'){stopScale();playTone(mid);showNow(mid);highlightKey(mid);}
       if(a==='high'){stopScale();playTone(v.high);showNow(v.high);highlightKey(v.high);}
       if(a==='three'){playNotes([v.low,mid,v.high]);}
+      if(a==='scale'){stopScale();playScale(v.low,v.high);}
     };
   });
   grid.appendChild(el);
 
   if(tbody){
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><strong>${v.nombre}</strong></td><td>${v.cat.split('·')[0]}</td><td>${v.rangoTxt}</td><td>${v.freqTxt}</td><td><button class="chip" data-v="${v.id}">Escuchar</button></td>`;
+    tr.innerHTML=`<td><strong>${v.nombre}</strong></td><td>${v.cat.split('·')[0]}</td><td>${v.rangoTxt}</td><td>${v.freqTxt}</td><td><button class="chip" data-v="${v.id}">${LANG==='en'?'Listen':'Escuchar'}</button></td>`;
     tr.querySelector('button').onclick=()=>playScale(v.low,v.high);
     tbody.appendChild(tr);
   }
@@ -151,7 +162,7 @@ for(let m=LOW_MIDI;m<=HIGH_MIDI;m++){
 }
 
 function showNow(m){
-  setNowHtml(`🎧 <strong>${midiToName(m)}</strong> · ${midiToFreq(m).toFixed(1)} Hz · MIDI ${m}<br><span class="muted small">Canta un “Ah” intentando igualarlo sin forzar</span>`);
+  setNowHtml(`🎧 <strong>${midiToName(m)}</strong> · ${midiToFreq(m).toFixed(1)} Hz · MIDI ${m}<br><span class="muted small">${LANG==='en'?'Sing an “Ah” trying to match it without straining':'Canta un “Ah” intentando igualarlo sin forzar'}</span>`);
 }
 function highlightKey(m){
   Object.values(keyEls).forEach(k=>k.classList.remove('active'));
@@ -190,7 +201,7 @@ function analyzeVoice(){
   const res=document.getElementById('resultado');
   if(!res) return;
   if(myLow==null||myHigh==null){ return; }
-  if(myHigh<myLow){ res.classList.remove('hidden'); res.innerHTML=`<h3>⚠️ Rango invertido</h3><p>Tu nota aguda (${midiToName(myHigh)}) es más grave que tu grave (${midiToName(myLow)}). Intercámbialas.</p>`; return; }
+    if(myHigh<myLow){ res.classList.remove('hidden'); res.innerHTML=`<h3>⚠️ ${LANG==='en'?'Inverted range':'Rango invertido'}</h3><p>${LANG==='en'?'Your high note':'Tu nota aguda'} (${midiToName(myHigh)}) ${LANG==='en'?'is lower than your low':'es más grave que tu grave'} (${midiToName(myLow)}). ${LANG==='en'?'Swap them.':'Intercámbialas.'}</p>`; return; }
   const scored = VOICES.map(v=>{
     const lo=Math.max(myLow,v.low), hi=Math.min(myHigh,v.high);
     const overlap=Math.max(0, hi-lo+1);
@@ -205,23 +216,30 @@ function analyzeVoice(){
   const best=scored[0], second=scored[1];
   const pct=Math.round(Math.max(0,Math.min(100, 55 + best.overlap*3 - best.dist*2)));
   res.classList.remove('hidden');
-  res.innerHTML=`
-    <h3>✨ Tu voz probable: ${best.nombre}</h3>
-    <p>Tu rango cómodo: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong> (${myHigh-myLow} semitonos).<br>
-    Coincide mejor con <strong>${best.nombre} (${best.rangoTxt})</strong> con ~${pct}% de afinidad.</p>
-    <div class="bar"><i style="width:${pct}%"></i></div>
-    <p><strong>2ª opción:</strong> ${second.nombre} (${second.rangoTxt})</p>
-    <p class="muted small">${best.desc} ${best.ejemplo}.</p>
-    <p>🎤 <strong>Consejo:</strong> ${consejo(best.id)}<br>
-    <span class="muted small">Prueba a cantar la escala de ${best.nombre} arriba y comprueba si el centro te resulta cómodo. Si fuerzas los agudos, prueba ${second.nombre}.</span></p>
-    <div class="play-row">
-      <button class="chip scale" id="res-play">▶ Oír escala de ${best.nombre}</button>
-    </div>`;
+   res.innerHTML=`
+     <h3>✨ ${LANG==='en'?'Your likely voice':'Tu voz probable'}: ${best.nombre}</h3>
+     <p>${LANG==='en'?'Your comfortable range':'Tu rango cómodo'}: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong> (${myHigh-myLow} ${LANG==='en'?'semitones':'semitonos'}).<br>
+     ${LANG==='en'?'Best match with':'Coincide mejor con'} <strong>${best.nombre} (${best.rangoTxt})</strong> ${LANG==='en'?'with ~':'con ~'}${pct}% ${LANG==='en'?'affinity':'de afinidad'}.</p>
+     <div class="bar"><i style="width:${pct}%"></i></div>
+     <p><strong>${LANG==='en'?'2nd option':'2ª opción'}:</strong> ${second.nombre} (${second.rangoTxt})</p>
+     <p class="muted small">${best.desc} ${best.ejemplo}.</p>
+     <p>🎤 <strong>${LANG==='en'?'Tip':'Consejo'}:</strong> ${consejo(best.id)}<br>
+     <span class="muted small">${LANG==='en'?'Try singing the scale of':'Prueba a cantar la escala de'} ${best.nombre} ${LANG==='en'?'above and check if the center feels comfortable. If high notes strain, try':'arriba y comprueba si el centro te resulta cómodo. Si fuerzas los agudos, prueba'} ${second.nombre}.</span></p>
+     <div class="play-row">
+       <button class="chip scale" id="res-play">▶ ${LANG==='en'?'Hear scale of':'Oír escala de'} ${best.nombre}</button>
+     </div>`;
   document.getElementById('res-play').onclick=()=>playScale(best.low,best.high);
   res.scrollIntoView({behavior:'smooth'});
 };
 
 function consejo(id){
+  if (LANG === 'en') {
+    switch(id){
+      case 'voz1': return 'Your range is the high melody. Warm up upward without pushing and enter the sheets of Voice 1.';
+      case 'voz2': return 'Your strength is the center. Practice transition passages and enter the sheets of Voice 2.';
+      default: return 'Your base is the lows with support and air. Do not force highs and enter the sheets of Voice 3.';
+    }
+  }
   switch(id){
     case 'voz1': return 'Tu zona es la melodía aguda. Calienta hacia arriba sin empujar y entra en las fichas de Voz 1.';
     case 'voz2': return 'Tu fuerte es el centro. Practica los pasajes de enlace y entra en las fichas de Voz 2.';
@@ -264,7 +282,7 @@ let micStream=null, micAnalyser=null, micBuf=null, micRaf=null, micListening=fal
 const btnMic=document.getElementById('btn-mic');
 
 function micSetUI(){
-  btnMic.textContent = micListening ? '■ Detener detección' : '🎤 Canta y verás la nota';
+   btnMic.textContent = micListening ? (LANG==='en'?'■ Stop detection':'■ Detener detección') : (LANG==='en'?'🎤 Sing and you will see the note':'🎤 Canta y verás la nota');
   btnMic.classList.toggle('listening', micListening);
 }
 function micLoop(){
@@ -277,7 +295,7 @@ function micLoop(){
       if(myLow==null||midi<myLow) myLow=midi;
       if(myHigh==null||midi>myHigh) myHigh=midi;
       lastPlayed=midi; updateButtons(); refreshMarks(); highlightKey(midi);
-      setNowHtml(`🎙️ <strong>${midiToName(midi)}</strong> · ${freq.toFixed(1)} Hz<br><span class="muted small">Rango: ${midiToName(myLow)} – ${midiToName(myHigh)} · pulsa Detener para ver tu voz</span>`);
+      setNowHtml(`🎙️ <strong>${midiToName(midi)}</strong> · ${freq.toFixed(1)} Hz<br><span class="muted small">${LANG==='en'?'Range':'Rango'}: ${midiToName(myLow)} – ${midiToName(myHigh)} · ${LANG==='en'?'press Stop to see your voice':'pulsa Detener para ver tu voz'}</span>`);
     }
   }
   micRaf=requestAnimationFrame(micLoop);
@@ -288,17 +306,17 @@ async function micToggle(){
     micStream?.getTracks().forEach(t=>t.stop()); micStream=null; micAnalyser=null;
     micListening=false; micSetUI();
     if(myLow!=null&&myHigh!=null){
-      setNowHtml(`🎙️ Rango por micro: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong>`);
+       setNowHtml(`🎙️ ${LANG==='en'?'Mic range':'Rango por micro'}: <strong>${midiToName(myLow)} – ${midiToName(myHigh)}</strong>`);
       maybeAnalyze();
     } else setNowText('');
     return;
   }
   if(!navigator.mediaDevices?.getUserMedia){
-    setNowText('⚠️ Tu navegador no permite micrófono (usa localhost o HTTPS).');
+     setNowText('⚠️ ' + (LANG==='en'?'Your browser does not allow microphone (use localhost or HTTPS).':'Tu navegador no permite micrófono (usa localhost o HTTPS).'));
     return;
   }
   try{
-    setNowText('Pidiendo permiso de micro… 🎙️');
+     setNowText(LANG==='en'?'Requesting microphone permission… 🎙️':'Pidiendo permiso de micro… 🎙️');
     micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}});
     const ac=audio();
     const src=ac.createMediaStreamSource(micStream);
@@ -307,10 +325,10 @@ async function micToggle(){
     src.connect(micAnalyser);
     myLow=myHigh=null; refreshMarks();
     micListening=true; micSetUI();
-    setNowText('Canta de grave a agudo… 🎤');
+     setNowText(LANG==='en'?'Sing from low to high… 🎤':'Canta de grave a agudo… 🎤');
     micLoop();
   }catch(e){
-    setNowText('⚠️ Sin acceso al micro. Revisa permisos del navegador.');
+     setNowText('⚠️ ' + (LANG==='en'?'No microphone access. Check browser permissions.':'Sin acceso al micro. Revisa permisos del navegador.'));
   }
 }
 btnMic.onclick=micToggle;

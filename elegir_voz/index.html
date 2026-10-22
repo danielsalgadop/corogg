@@ -4,22 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Descubre tu Voz | Test de Tesitura Vocal</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="../css.css" />
+  <script src="../js/i18n.js?v=4"></script>
 </head>
 <body>
   <div class="music-bg-lines"></div>
   <nav>
-    <a href="../index.html" class="logo"><span>🎼</span> Ecos del Atlántico</a>
+    <a href="../index.html" class="logo"><span>🎼</span> <span data-i18n="brand">Ecos del Atlántico</span></a>
     <ul>
-      <li><a href="../repertorio.html">Repertorio</a></li>
-      <li><a href="../ayuda.html">Ayuda</a></li>
+      <li><a href="index.html" data-i18n="nav_voces">Elegir voz</a></li>
+      <li><a href="../ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+      <li class="lang-switch"><button onclick="setLang('es'); location.reload();">ES</button><button onclick="setLang('en'); location.reload();">EN</button></li>
     </ul>
   </nav>
   <header class="selection-top">
     <div class="container">
-      <p class="selection-kicker">Ecos del Atlántico · ¿Qué voz soy?</p>
-      <h1>Descubre tu voz</h1>
-      <p class="subtitle">Escucha cada voz, canta sin forzar y marca tu grave y agudo: sabrás si eres Voz 1, 2 o 3.</p>
+      <p class="selection-kicker"><span data-i18n="brand">Ecos del Atlántico</span> · <span data-i18n="ev_what_voice">¿Qué voz soy?</span></p>
+      <h1 data-i18n="ev_title">Descubre tu voz</h1>
+      <p class="subtitle" data-i18n="ev_subtitle">Escucha cada voz, canta sin forzar y marca tu grave y agudo: sabrás si eres Voz 1, 2 o 3.</p>
       <div id="voces">
         <div id="voice-grid" class="grid"></div>
       </div>
@@ -28,25 +30,28 @@
 
   <main class="container">
     <section id="test" class="test-box">
-      <h2>Test interactivo de tu rango</h2>
-      <p>Toca las teclas para oírlas y cantarlas. Marca tu nota más grave y más aguda:</p>
+      <!-- <h2 data-i18n="ev_test_title">Test interactivo de tu rango</h2> -->
+
+      <div id="piano" class="piano" aria-label="Teclado piano de Mi2 a Do6"></div>
+
+      <p data-i18n="ev_test_intro">Toca las teclas para oírlas y cantarlas. Marca tu nota más grave y más aguda:</p>
 
       <div class="mark-actions">
-        <button id="btn-mark-low" class="btn btn-ghost" disabled>Marcar como mi GRAVE</button>
-        <button id="btn-mark-high" class="btn btn-ghost" disabled>Marcar como mi AGUDO</button>
+        <button id="btn-mark-low" class="btn btn-ghost" disabled data-i18n="ev_mark_low">Marcar como mi GRAVE</button>
+        <button id="btn-mark-high" class="btn btn-ghost" disabled data-i18n="ev_mark_high">Marcar como mi AGUDO</button>
       </div>
 
       <div class="hero-controls">
         <input type="hidden" id="timbre" value="vocal" />
-        <button id="btn-clear" class="btn btn-ghost" title="Quitar marcadores" disabled>Quitar Marcadores</button>
+        <button id="btn-clear" class="btn btn-ghost" title="Quitar marcadores" disabled data-i18n="ev_clear">Quitar Marcadores</button>
       </div>
 
-      <div id="piano" class="piano" aria-label="Teclado piano de Mi2 a Do6"></div>
-
+      <!--
       <div class="analyze-actions">
-        <button id="btn-mic" class="btn btn-primary big">🎤 Canta y verás la nota</button>
-        <p class="muted small mic-hint">Sin guardar ni subir: detecta tu grave y agudo cantando de grave a agudo.</p>
+        <button id="btn-mic" class="btn btn-primary big" data-i18n="ev_mic_btn">🎤 Sing and you will see the note</button>
+        <p class="muted small mic-hint" data-i18n="ev_mic_hint">Without saving or uploading: detects your low and high by singing from low to high.</p>
       </div>
+      -->
 
       <div id="resultado" class="resultado hidden"></div>
     </section>

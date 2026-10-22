@@ -29,14 +29,13 @@ $js .= <<<'JS'
 function safeGetLang() {
   try {
     const p = new URLSearchParams(window.location.search);
-    if (p.get('lang')) return p.get('lang');
+    const lang = p.get('lang');
+    if (lang === 'es' || lang === 'en') return lang;
   } catch (e) {}
-  try { return localStorage.getItem('lang') || 'es'; } catch (e) { return 'es'; }
+  return 'es';
 }
 
-function safeSetLangStorage(lang) {
-  try { localStorage.setItem('lang', lang); } catch (e) {}
-}
+function safeSetLangStorage(lang) {}
 
 function applyI18n(lang) {
   document.documentElement.lang = lang;

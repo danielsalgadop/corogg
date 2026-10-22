@@ -20,3 +20,4 @@ Iñigo :
 
 A futuro:
 - navegador para poder mover la grabacion
+- A futuro: retomar funcionalidad de análisis por micrófono en elegir_voz (bloque .analyze-actions comentado).

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voces - Ecos del Atlántico</title>
     <link rel="stylesheet" href="../../css.css">
-    <script src="../../js/i18n.js"></script>
+    <script src="../../js/i18n.js?v=4"></script>
 </head>
 <body>
     <nav>
@@ -13,35 +13,37 @@
             <span>🎼</span> <span data-i18n="brand">Ecos del Atlántico</span>
         </a>
         <ul>
+            <li><a href="voces.html" data-i18n="nav_voces">Elegir voz</a></li>
             <li><a href="../../ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
         </ul>
     </nav>
 
     <main class="selection-page">
-        <header class="selection-intro">
-            <p class="selection-kicker">Cant Help Falling in Love</p>
-            <h1>Elige tu voz</h1>
-            <p>Encuentra tu registro y entra en las fichas para preparar cada parte de la canción.</p>
-        </header>
+    <header class="selection-intro">
+        <p class="selection-kicker">Cant Help Falling in Love</p>
+        <h1 data-i18n="voces_title">Elige tu voz</h1>
+        <p data-i18n="voces_intro">Encuentra tu registro y entra en las fichas para preparar cada parte de la canción.</p>
+    </header>
 
         <section class="voice-grid" aria-label="Voces disponibles">
             <a href="fichas_voz1.html" class="voice-card voice-one">
                 <span class="voice-number">01</span>
-                <span class="voice-card-title">Voz 1</span>
-                <span class="voice-card-text">Una línea clara para comenzar el recorrido.</span>
-                <span class="voice-card-action">Ver fichas <span aria-hidden="true">→</span></span>
+                <span class="voice-card-title" data-i18n="voice_1_title">Voz 1</span>
+                <span class="voice-card-text" data-i18n="voice_1_text">Una línea clara para comenzar el recorrido.</span>
+                <span class="voice-card-action" data-i18n="view_sheets">Ver fichas</span> <span aria-hidden="true">→</span>
             </a>
             <a href="fichas_voz2.html" class="voice-card voice-two">
                 <span class="voice-number">02</span>
-                <span class="voice-card-title">Voz 2</span>
-                <span class="voice-card-text">La parte intermedia que sostiene la armonía.</span>
-                <span class="voice-card-action">Ver fichas <span aria-hidden="true">→</span></span>
+                <span class="voice-card-title" data-i18n="voice_2_title">Voz 2</span>
+                <span class="voice-card-text" data-i18n="voice_2_text">La parte intermedia que sostiene la armonía.</span>
+                <span class="voice-card-action" data-i18n="view_sheets">Ver fichas</span> <span aria-hidden="true">→</span>
             </a>
             <a href="fichas_voz3.html" class="voice-card voice-three">
                 <span class="voice-number">03</span>
-                <span class="voice-card-title">Voz 3</span>
-                <span class="voice-card-text">El registro grave para completar el conjunto.</span>
-                <span class="voice-card-action">Ver fichas <span aria-hidden="true">→</span></span>
+                <span class="voice-card-title" data-i18n="voice_3_title">Voz 3</span>
+                <span class="voice-card-text" data-i18n="voice_3_text">El registro grave para completar el conjunto.</span>
+                <span class="voice-card-action" data-i18n="view_sheets">Ver fichas</span> <span aria-hidden="true">→</span>
             </a>
         </section>
     </main>
