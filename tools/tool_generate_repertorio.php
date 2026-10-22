@@ -15,6 +15,7 @@ $inputPath = $root . '/config/site.json';
 $outputPath = $root . '/repertorio.html';
 
 require_once $root . '/tools/libs/lib_code.php';
+require_once $root . '/tools/libs/html.php';
 
 try {
     [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), ['lang' => 'value']);
@@ -107,6 +108,7 @@ function createRepertoryPage(array $data): string
     $cards = '';
     $exploreVoices = LibCode::t('explore_voices');
     $sheetMusic = LibCode::t('sheet_music');
+    $header = createSiteHeader(false, 'index.html', '', 'ayuda.html', $brand);
 
     foreach ($data['songs'] as $song) {
         $number = LibCode::escape(str_pad((string) ((int) array_search($song, $data['songs'], true) + 1), 2, '0', STR_PAD_LEFT));
@@ -140,16 +142,8 @@ HTML;
     <script src="js/i18n.js?v=4"></script>
 </head>
 <body>
-    <nav>
-        <a href="index.html" class="logo">
-            <span>🎼</span> <span data-i18n="brand">{$brand}</span>
-        </a>
-        <ul>
-            <li><a href="songs/cant-help-falling-in-love/voces.html" data-i18n="nav_voces">Elegir voz</a></li>
-            <li><a href="ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
-            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
-        </ul>
-    </nav>
+    {$header}
+
 
     <main class="selection-page repertory-page">
         <header class="selection-intro">

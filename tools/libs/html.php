@@ -18,6 +18,7 @@ function createVoicePage(
     $voiceLabel = "voz{$voiceNumber}";
     $particellaMarkup = createParticellaMarkup($particella, $fichaNumber, $voiceNumber);
     $navMarkup = createFichaNav($fichaNumber, $voiceNumber, $prevFicha, $nextFicha);
+    $header = createSiteHeader(true, '../../../../index.html', '../../voces.html', '../../../../ayuda.html');
     $trackEntries = [];
     if ($guitarPath !== '') {
         $trackEntries[] = "    { id: 'guitarra', nombre: '" . LibCode::t('track_guitar') . "', url: '{$guitarPath}' }";
@@ -45,16 +46,7 @@ function createVoicePage(
     <link rel="stylesheet" href="../../../../css.css">
 </head>
 <body class="voice-{$voiceNumber}">
-<nav>
-    <a href="../../../../index.html" class="logo">
-        <span>🎼</span> <span data-i18n="brand">Ecos del Atlántico</span>
-    </a>
-    <ul>
-        <li><a href="../../voces.html" data-i18n="nav_voces">Elegir voz</a></li>
-        <li><a href="../../../../ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
-        <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
-    </ul>
-</nav>
+{$header}
 
 <p class="selection-kicker"><span class="nota-musical">♫</span> {$songTitle} <span class="nota-musical">♫</span></p>
 <h1 class="titulo-ficha">Ficha{$fichaNumber}/{$totalFichas} {$voiceLabel}</h1>
@@ -244,11 +236,12 @@ function createFichasIndexPage(
         if ($cards !== '') {
             $cards .= "\n";
         }
-        $cards .= "            <a href=\"ficha{$fichaNumber}/voz{$voiceNumber}/voz{$voiceNumber}.html\" class=\"ficha-card\"><span>{$number}</span><strong>" . LibCode::t('ficha', ['number' => $fichaNumber]) . "</strong><small>{$safeTag}</small></a>";
+        $cards .= "            <a href=\"ficha{$fichaNumber}/voz{$voiceNumber}/voz{$voiceNumber}.html\" class=\"ficha-card\"><strong>" . LibCode::t('ficha', ['number' => $fichaNumber]) . "</strong><small>{$safeTag}</small></a>";
     }
 
     $fichasTitle = LibCode::t('fichas_title', ['label' => $safeLabel]);
     $fichaLabel = LibCode::t('ficha', ['number' => $fichaNumber]);
+    $header = createSiteHeader(true, '../../index.html', '../../songs/cant-help-falling-in-love/voces.html', '../../ayuda.html', $brand);
     return <<<HTML
 <!DOCTYPE html>
 <html lang="es">
@@ -261,15 +254,7 @@ function createFichasIndexPage(
 </head>
 <body>
 
-    <nav>
-        <a href="../../index.html" class="logo">
-            <span>🎼</span>{$safeBrand}
-        </a>
-        <ul>
-            <li><a href="../../ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
-            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
-        </ul>
-    </nav>
+    {$header}
 
     <main class="selection-page ficha-selection">
         <header class="selection-intro">
@@ -321,27 +306,14 @@ HTML;
 HTML;
     }
 
+    $header = createSiteHeader(false, 'index.html', 'songs/cant-help-falling-in-love/voces.html', 'ayuda.html', 'Ecos del Atlántico', true);
+
     return <<<HTML
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{$title} - Ecos del Atlántico</title>
     <link rel="stylesheet" href="css.css">
     <script src="js/i18n.js?v=4"></script>
 </head>
 <body>
-    <nav>
-        <a href="index.html" class="logo">
-            <span>🎼</span> <span data-i18n="brand">Ecos del Atlántico</span>
-        </a>
-        <ul>
-            <li><a href="songs/cant-help-falling-in-love/voces.html" data-i18n="nav_voces">Elegir voz</a></li>
-            <li><a href="ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
-            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
-        </ul>
-    </nav>
+    {$header}
 
     <main class="help-content">
         <header class="help-intro">
@@ -351,5 +323,34 @@ HTML;
     </main>
 </body>
 </html>
+HTML;
+}
+
+function createSiteHeader(bool $showElegirVoz, string $logoHref, string $elegirVozHref, string $ayudaHref, string $brand = 'Ecos del Atlántico', bool $showRepertorio = false, string $repertorioHref = 'repertorio.html'): string
+{
+    $safeBrand = LibCode::escape($brand);
+    $safeLogo = LibCode::escape($logoHref);
+    $safeAyuda = LibCode::escape($ayudaHref);
+    $repertorioMarkup = '';
+    if ($showRepertorio) {
+        $safeRepertorio = LibCode::escape($repertorioHref);
+        $repertorioMarkup = "        <li><a href=\"{$safeRepertorio}\" data-i18n=\"nav_repertorio\">Repertorio</a></li>\n";
+    }
+    $elegirMarkup = '';
+    if ($showElegirVoz) {
+        $safeElegir = LibCode::escape($elegirVozHref);
+        $elegirMarkup = "        <li><a href=\"{$safeElegir}\" data-i18n=\"nav_voces\">Elegir voz</a></li>\n";
+    }
+
+    return <<<HTML
+<nav>
+    <a href="{$safeLogo}" class="logo">
+        <span>🎼</span> <span data-i18n="brand">{$safeBrand}</span>
+    </a>
+    <ul>
+{$repertorioMarkup}{$elegirMarkup}        <li><a href="{$safeAyuda}" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+        <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
+    </ul>
+</nav>
 HTML;
 }

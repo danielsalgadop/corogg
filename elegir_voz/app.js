@@ -108,8 +108,8 @@ VOICES.forEach(v=>{
   const el = document.createElement('div');
   el.className='card'; el.style.setProperty('--c', v.color);
   el.innerHTML=`
-    <div class="cat">${v.cat}</div>
     <h3>${v.nombre}</h3>
+    <div class="cat">${v.cat}</div>
     <div class="play-row">
       <button class="chip" data-a="low">▶ ${LANG==='en'?'Low':'Grave'}</button>
       <button class="chip" data-a="mid">▶ ${LANG==='en'?'Mid':'Centro'}</button>

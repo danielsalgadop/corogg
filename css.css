@@ -307,8 +307,8 @@ nav a:hover {
     color: var(--text-light);
     display: flex;
     flex-direction: column;
-    min-height: 170px;
-    padding: 1.5rem;
+    min-height: 120px;
+    padding: 1rem;
     position: relative;
     text-decoration: none;
     transition: background 0.3s, border-color 0.3s, transform 0.3s;
