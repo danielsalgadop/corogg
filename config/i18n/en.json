@@ -1,0 +1,20 @@
+{
+  "nav_repertorio": "Repertoire",
+  "nav_ayuda": "HELP",
+  "nav_voces": "Choose voice",
+  "brand": "Echoes of the Atlantic",
+  "tagline": "One family, many voices",
+  "pending_guide": "Guide pending to add: {expected}",
+  "player_title": "Multitrack Player",
+  "track_guitar": "🎵 Guitar",
+  "pending_particella": "Particella pending to add: {expected}",
+  "prev": "Previous",
+  "next": "Next",
+  "fichas_title": "Sheets · {label}",
+  "ficha": "Sheet {number}",
+  "first": "Start",
+  "middle": "Continue",
+  "last": "End",
+  "explore_voices": "Explore voices",
+  "sheet_music": "Sheet music"
+}

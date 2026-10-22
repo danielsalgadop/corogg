@@ -10,6 +10,30 @@ declare(strict_types=1);
  */
 final class LibCode
 {
+    private static array $i18n = [];
+    private static string $lang = 'es';
+
+    public static function setLanguage(string $root, string $lang): void
+    {
+        self::$lang = $lang;
+        $path = $root . '/config/i18n/' . $lang . '.json';
+        if (is_file($path)) {
+            $json = file_get_contents($path);
+            $data = json_decode((string) $json, true);
+            if (is_array($data)) {
+                self::$i18n = $data;
+            }
+        }
+    }
+
+    public static function t(string $key, array $replacements = []): string
+    {
+        $value = self::$i18n[$key] ?? $key;
+        foreach ($replacements as $placeholder => $replacement) {
+            $value = str_replace('{' . $placeholder . '}', (string) $replacement, $value);
+        }
+        return $value;
+    }
     /**
      * Parsea argumentos de consola para un tool de generacion.
      *
@@ -19,14 +43,19 @@ final class LibCode
      *
      * @param string[] $argv Argumentos (sin el nombre del script).
      * @param array<string, string> $spec Mapa "flag" => 'bool' | 'value' (sin 'force').
+     * @param array<string, string> $aliases Mapa "alias-corto" => "flag-largo" (sin guiones).
      * @return array{0: array<string, bool|string>, 1: bool} [$args, $force]
      */
-    public static function parseToolArgs(array $argv, array $spec): array
+    public static function parseToolArgs(array $argv, array $spec, array $aliases = []): array
     {
         $spec['force'] ??= 'bool';
 
         $normalized = [];
         foreach ($argv as $argument) {
+            if (preg_match('/^-([a-z0-9][a-z0-9-]*)$/', $argument, $matches) === 1 && isset($aliases[$matches[1]])) {
+                $normalized[] = '--' . $aliases[$matches[1]];
+                continue;
+            }
             $normalized[] = $argument === '-f' ? '--force' : $argument;
         }
 

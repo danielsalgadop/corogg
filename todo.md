@@ -1,11 +1,8 @@
 Iñigo :
 
-- partira nueva partitura, cambiar
-
 - ficha7 voz2 -> se van desfasando, el click de voz y guitarra
 - ficha4 voz3 -> se van desfasando, el progresivo
 - voz 1
-    - ficha2 -> sin guitarra
     - ficha6 -> sin guitartra
     - ficha7 -> trac trac trac
 - voz 2

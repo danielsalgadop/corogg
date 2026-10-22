@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fichas Voz 3 - Ecos del Atlántico</title>
+    <title>Fichas · Voz 3 - Ecos del Atlántico</title>
     <link rel="stylesheet" href="../../css.css">
+    <script src="../../js/i18n.js"></script>
 </head>
 <body>
 
@@ -13,14 +14,15 @@
             <span>🎼</span>Ecos del Atlántico
         </a>
         <ul>
-            <li><a href="../../ayuda.html" class="help-link">AYUDA</a></li>
+            <li><a href="../../ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
         </ul>
     </nav>
 
     <main class="selection-page ficha-selection">
         <header class="selection-intro">
             <p class="selection-kicker">Tu recorrido de estudio</p>
-            <h1>Fichas · Voz 3</h1>
+            <h1 data-i18n="fichas_title" data-label="Voz 3">Fichas · Voz 3</h1>
             <p>Avanza de la ficha 1 a la 7 y prepara tu parte paso a paso.</p>
         </header>
         <section class="ficha-grid" aria-label="Fichas de Voz 3">

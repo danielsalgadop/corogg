@@ -14,10 +14,11 @@ $root = dirname(__DIR__);
 $inputPath = $root . '/config/ayuda.json';
 $outputPath = $root . '/ayuda.html';
 
-require_once $root . '/lib_code.php';
+require_once $root . '/tools/libs/lib_code.php';
+require_once $root . '/tools/libs/html.php';
 
 try {
-    [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), []);
+    [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), ['lang' => 'value']);
 } catch (InvalidArgumentException $exception) {
     fwrite(STDERR, $exception->getMessage() . "\n");
     exit(1);
@@ -41,6 +42,9 @@ try {
 }
 
 validateHelpData($data);
+
+$lang = is_string($args['lang'] ?? null) && $args['lang'] !== '' ? (string) $args['lang'] : 'es';
+LibCode::setLanguage($root, $lang);
 
 $html = createHelpPage($data);
 
@@ -91,69 +95,4 @@ function validateHelpData(mixed $data): void
             }
         }
     }
-}
-
-function createHelpPage(array $data): string
-{
-    $title = LibCode::escape($data['title']);
-    $intro = LibCode::escape($data['intro']);
-    $sections = '';
-
-    foreach ($data['sections'] as $section) {
-        $number = LibCode::escape((string) $section['number']);
-        $sectionTitle = LibCode::escape($section['title']);
-        $text = LibCode::escape($section['text']);
-        $videoUrl = LibCode::escape($section['video']['url']);
-        $videoTitle = LibCode::escape($section['video']['title']);
-        $ctaHtml = '';
-        if (isset($section['cta'])) {
-            $ctaLabel = LibCode::escape($section['cta']['label']);
-            $ctaHref = LibCode::escape($section['cta']['href']);
-            $ctaHtml = <<<HTML
-            <div style="margin-top:1rem;">
-                <a href="{$ctaHref}" class="btn-principal" style="display:inline-block;text-decoration:none;">{$ctaLabel}</a>
-            </div>
-HTML;
-        }
-
-        $sections .= <<<HTML
-
-
-        <section class="help-section">
-            <h2>{$number}. {$sectionTitle}</h2>
-            <p>{$text}</p>{$ctaHtml}
-            <div class="help-video">
-                <div class="video-frame">
-                    <iframe src="{$videoUrl}" title="{$videoTitle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
-            </div>
-        </section>
-HTML;
-    }
-
-    return <<<HTML
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{$title} - Ecos del Atlántico</title>
-    <link rel="stylesheet" href="css.css">
-</head>
-<body>
-    <nav>
-        <a href="index.html" class="logo">
-            <span>🎼</span> Ecos del Atlántico
-        </a>
-    </nav>
-
-    <main class="help-content">
-        <header class="help-intro">
-            <h1>{$title}</h1>
-            <p>{$intro}</p>
-        </header>{$sections}
-    </main>
-</body>
-</html>
-HTML;
 }

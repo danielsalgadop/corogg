@@ -11,10 +11,13 @@ Sitio web estático para un coro bilingüe (España/EE.UU.) que ayuda a los cori
   - `site.json` — título del sitio, catálogo de canciones, voces y fichas
   - `app.json` — totales (fichas y voces)
   - `ayuda.json` — secciones de ayuda
+  - `i18n/` — traducciones de UI (es/en)
 - `tools/` — Scripts PHP/Shell para generar automáticamente los HTML del repertorio, fichas y ayuda a partir de los JSON de config:
   - `tool_generate_repertorio.php`, `tool_generate_fichas.php`, `tool_generate_ayuda.php`
-  - `tool_normalizar_nombres.sh`, `tool_estructura_fichas_ok.sh`, `tool_pdf2png_particella_creator.sh`
-- `lib_code.php` — Librería compartida para los tools (parseo de args, escape HTML, escritura de archivos respetando la bandera `--force`)
+  - `tool_normalizar_nombres.sh`, `tool_estructura_fichas_ok.sh`
+- `tools/libs/lib_code.php` — Librería compartida para los tools
+- `tools/libs/html.php` — Generación de HTML de fichas/índices
+- `i18n.js` — Cambio de idioma en cliente (ES/EN)
 
 ## Cómo ejecutar
 Sitio estático. Para verlo localmente:
@@ -27,3 +30,5 @@ python3 -m http.server 8000
 - Idioma UI: español
 - Los HTML del sitio se generan con los tools PHP a partir de `config/*.json`; no editar los HTML generados a mano salvo necesidad
 - `ayuda.html` se genera desde `config/ayuda.json`
+## Nota
+Beam Free me ha gustado mucho.

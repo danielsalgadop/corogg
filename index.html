@@ -18,17 +18,18 @@
     <!-- Barra de navegación -->
     <nav>
         <a href="index.html" class="logo">
-            <span>🎼</span> Ecos del Atlántico
+            <span>🎼</span> <span data-i18n="brand">Ecos del Atlántico</span>
         </a>
         <ul>
-            <li><a href="repertorio.html">Repertorio</a></li>
-            <li><a href="ayuda.html" class="help-link">AYUDA</a></li>
+            <li><a href="repertorio.html" data-i18n="nav_repertorio">Repertorio</a></li>
+            <li><a href="ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+            <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
         </ul>
     </nav>
 
     <!-- Sección de Bienvenida (Hero) -->
     <section class="hero" id="inicio">
-        <h1>Una familia muchas voces - One family many voices</h1>
+        <h1 data-i18n="tagline">Una familia, muchas voces</h1>
         <div class="flag-divider">
             <div class="flag-es"></div>
             <div class="flag-us"></div>
@@ -37,5 +38,6 @@
         <a href="#unirse" class="btn">Audicionar Ahora</a> -->
     </section>
 
+    <script src="js/i18n.js"></script>
 </body>
 </html>

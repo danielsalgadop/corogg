@@ -37,14 +37,18 @@ declare(strict_types=1);
  *
  * Uso:
  *   php tool_generate_fichas.php
+ *   php tool_generate_fichas.php --ignore-if-exists
+ *   php tool_generate_fichas.php -iie
  *
- * No acepta argumentos: genera y sobrescribe siempre todos los archivos de
- * todas las canciones, fichas y voces.
+ * Con --ignore-if-exists (o -iie) no genera nada: solo lista cada fichero
+ * que se crearía seguido de (FLAG=ignored-if-exists). Si a una ficha le
+ * falta la particella (sin PDF fuente) se lanza una excepcion.
  */
 
 $root = dirname(__DIR__);
 
-require_once $root . '/lib_code.php';
+require_once $root . '/tools/libs/lib_code.php';
+require_once $root . '/tools/libs/html.php';
 
 $sitePath = $root . '/config/site.json';
 
@@ -63,13 +67,18 @@ try {
     } catch (JsonException $exception) {
         throw new RuntimeException("JSON invalido en {$sitePath}: {$exception->getMessage()}", 0, $exception);
     }
-
     if (!is_array($site)) {
         throw new RuntimeException("La raiz de {$sitePath} debe ser un objeto.");
     }
 
-
-
+    [$args, $force] = LibCode::parseToolArgs(
+        array_slice($argv, 1),
+        ['ignore-if-exists' => 'bool', 'lang' => 'value'],
+        ['iie' => 'ignore-if-exists']
+    );
+    $ignoreIfExists = LibCode::bool($args, 'ignore-if-exists');
+    $lang = is_string($args['lang'] ?? null) && $args['lang'] !== '' ? (string) $args['lang'] : 'es';
+    LibCode::setLanguage($root, $lang);
 
 
     $generated = 0;
@@ -80,7 +89,7 @@ try {
         throw new RuntimeException("No hay canciones definidas en {$sitePath}");
     }
 
-    if (!isPdftoppmAvailable()) {
+    if (!$ignoreIfExists && !isPdftoppmAvailable()) {
         throw new RuntimeException('pdftoppm no disponible; no se pueden generar los PNG de particellas.');
     }
 
@@ -90,32 +99,99 @@ try {
         }
 
         $songSlug = $song['slug'];
-        $songRoot = $root . '/songs/' . $songSlug;
+        if (!is_string($song['folder'] ?? null) || $song['folder'] === '') {
+            throw new RuntimeException("Cancion sin folder valido en site.json.");
+        }
+        $songRoot = $root . '/' . $song['folder'];
 
         if (!is_dir($songRoot)) {
             throw new RuntimeException("No existe la carpeta de la cancion: {$songRoot}");
         }
 
-        $songTotalFichas = (int) $song['total_fichas'];
-        $songTotalVoces = (int) $song['total_voces'];
-        $songHeights = readParticellaHeights($song);
+        $songTotalVoces = count($song['voices'] ?? []);
+        $songTotalFichas = 0;
+        foreach (($song['fichas'] ?? []) as $ficha) {
+            $songTotalFichas = max($songTotalFichas, (int) ($ficha['ficha'] ?? 0));
+        }
 
         $particellaSources = [];
-        $dropboxPath = $song['partitura_dropbox_path'] ?? ($site['partitura_dropbox_path'] ?? null);
-        if (is_string($dropboxPath) && $dropboxPath !== '') {
-            $dropboxRoot = isAbsolutePath($dropboxPath) ? $dropboxPath : $root . '/' . $dropboxPath;
-            if (!is_dir($dropboxRoot)) {
-                throw new RuntimeException("No existe partitura_dropbox_path: {$dropboxRoot}");
+        if (!$ignoreIfExists) {
+            $dropboxPath = $song['partitura_dropbox_path'] ?? ($site['partitura_dropbox_path'] ?? null);
+            if (is_string($dropboxPath) && $dropboxPath !== '') {
+                $dropboxRoot = isAbsolutePath($dropboxPath) ? $dropboxPath : $root . '/' . $dropboxPath;
+
+                $needsDropbox = false;
+                for ($checkFicha = 1; $checkFicha <= $songTotalFichas; $checkFicha++) {
+                    for ($checkVoice = 1; $checkVoice <= $songTotalVoces; $checkVoice++) {
+                        $checkDir = $songRoot . "/ficha{$checkFicha}/voz{$checkVoice}";
+                        $checkPng = $checkDir . "/particella_{$checkFicha}_voz{$checkVoice}.png";
+                        if (is_file($checkPng)) {
+                            continue;
+                        }
+
+                        $hasLocalSource = false;
+                        $canonicalPdf = $checkDir . "/particella_{$checkFicha}_voz{$checkVoice}.pdf";
+                        if (is_file($canonicalPdf)) {
+                            $hasLocalSource = true;
+                        } elseif (is_dir($checkDir)) {
+                            foreach (glob($checkDir . '/*.pdf') ?: [] as $candidate) {
+                                if (isParticellaFilename(basename($candidate))) {
+                                    $hasLocalSource = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($hasLocalSource) {
+                            continue;
+                        }
+
+                        $hasParticellaFile = false;
+                        if (is_dir($checkDir)) {
+                            foreach (glob($checkDir . '/*.{png,pdf}', GLOB_BRACE) ?: [] as $candidate) {
+                                if (isParticellaFilename(basename($candidate))) {
+                                    $hasParticellaFile = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!$hasParticellaFile) {
+                            continue;
+                        }
+
+                        $needsDropbox = true;
+                        break 2;
+                    }
+                }
+
+                if (!is_dir($dropboxRoot)) {
+                    if ($needsDropbox) {
+                        throw new RuntimeException("No existe partitura_dropbox_path: {$dropboxRoot}");
+                    }
+                } else {
+                    $particellaSources = findParticellaSources($dropboxRoot);
+                }
             }
-            $particellaSources = findParticellaSources($dropboxRoot);
         }
 
         for ($fichaNumber = 1; $fichaNumber <= $songTotalFichas; $fichaNumber++) {
             for ($voiceNumber = 1; $voiceNumber <= $songTotalVoces; $voiceNumber++) {
                 $voiceDirectory = $songRoot . "/ficha{$fichaNumber}/voz{$voiceNumber}";
-                $sourcePdf = $particellaSources[$voiceNumber][$fichaNumber];
-                $particellaDefaultHeight = (int) ($site['particella_default_height']);
-                $particellaHeight = $songHeights[$voiceNumber][$fichaNumber] ?? $particellaDefaultHeight;
+                $outputPath = $voiceDirectory . "/voz{$voiceNumber}.html";
+
+                $sourcePdf = $particellaSources[$voiceNumber][$fichaNumber] ?? null;
+                $particellaHeight = (int) ($song['particella_default_height'] ?? $site['particella_default_height']);
+                foreach (($song['fichas'] ?? []) as $fichaCfg) {
+                    if (($fichaCfg['voice'] ?? 0) != $voiceNumber || ($fichaCfg['ficha'] ?? 0) != $fichaNumber) {
+                        continue;
+                    }
+                    $configuredHeight = $fichaCfg['particella_height'] ?? null;
+                    if (is_numeric($configuredHeight) && (int) $configuredHeight > 0) {
+                        $particellaHeight = (int) $configuredHeight;
+                    }
+                    break;
+                }
                     $particellaCropWidth = (int) ($site['particella_default_crop_width']);
                     $particellaCropDpi = (int) ($site['particell_crop_dpi']);
 
@@ -128,11 +204,28 @@ try {
                     $particellaCropWidth,
                     $particellaCropDpi
                 );
+
+                if ($ignoreIfExists && is_file($outputPath)) {
+                    $pngName = "particella_{$fichaNumber}_voz{$voiceNumber}.png";
+                    $pngPath = $voiceDirectory . '/' . $pngName;
+                    if (!is_file($pngPath)) {
+                        echo "{$outputPath} (FLAG=ignored-if-exists) :: FALTA {$pngName}\n";
+                        continue;
+                    }
+                    echo "{$outputPath} (FLAG=ignored-if-exists) :: {$pngName}\n";
+                    continue;
+                }
+
                 $particella = findParticella($voiceDirectory, $fichaNumber, $voiceNumber);
                 $guideName = findGuide($voiceDirectory, $fichaNumber, $voiceNumber);
-                $outputPath = $voiceDirectory . "/voz{$voiceNumber}.html";
 
-                $relativeGuitar = "../guitarra{$fichaNumber}.mp3";
+                $guitarras = is_array($song['guitarras'] ?? null) ? $song['guitarras'] : [];
+                $guitarConfigPath = $guitarras[(string) $fichaNumber] ?? ($guitarras[$fichaNumber] ?? null);
+                if (is_string($guitarConfigPath) && $guitarConfigPath !== '') {
+                    $relativeGuitar = makeRelativePath($voiceDirectory, $songRoot . '/' . ltrim($guitarConfigPath, '/'));
+                } else {
+                    $relativeGuitar = '';
+                }
                 $relativeGuide = $guideName === null ? '' : './' . $guideName;
                 $prevFicha = $fichaNumber > 1 ? $fichaNumber - 1 : null;
                 $nextFicha = $fichaNumber < $songTotalFichas ? $fichaNumber + 1 : null;
@@ -145,7 +238,8 @@ try {
                     $relativeGuitar,
                     $relativeGuide,
                     $prevFicha,
-                    $nextFicha
+                    $nextFicha,
+                    $song['title']
                 );
 
                 $result = LibCode::writeIfChanged($outputPath, $html, true, false);
@@ -155,7 +249,11 @@ try {
             }
         }
 
-        $generated += generateFichasIndexes($root, $site, $songSlug, $songTotalFichas);
+        if ($ignoreIfExists) {
+            $generated += generateFichasIndexes($root, $site, $songSlug, $songTotalFichas, true);
+        } else {
+            $generated += generateFichasIndexes($root, $site, $songSlug, $songTotalFichas);
+        }
     }
 
     echo "Finalizado: {$generated} generado(s), {$pngsGenerated} PNG de particella(s).\n";
@@ -164,136 +262,23 @@ try {
     exit(1);
 }
 
-function createVoicePage(
-    int $fichaNumber,
-    int $voiceNumber,
-    int $totalFichas,
-    ?string $particella,
-    string $guitarPath,
-    string $voicePath,
-    ?int $prevFicha,
-    ?int $nextFicha
-): string {
-    $songTitle = "Can't Help Falling in Love";
-    $voiceLabel = "voz{$voiceNumber}";
-    $particellaMarkup = createParticellaMarkup($particella, $fichaNumber, $voiceNumber);
-    $navMarkup = createFichaNav($fichaNumber, $voiceNumber, $prevFicha, $nextFicha);
-    $guideTrack = $voicePath === ''
-        ? ''
-        : "    { id: '{$voiceLabel}', nombre: '🎵 {$voiceLabel}', url: '{$voicePath}' }";
-    $tracksSeparator = $guideTrack === '' ? '' : ",\n";
-    $guiaEsperada = LibCode::escape("guia_{$fichaNumber}_voz_{$voiceNumber}.m4a");
-    $guiaPendiente = $voicePath === ''
-        ? "<p class=\"guia-pendiente\">Guía pendiente de incorporar: {$guiaEsperada}</p>\n"
-        : '';
 
-    return <<<HTML
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{$songTitle} - Ficha{$fichaNumber}/{$totalFichas} {$voiceLabel}</title>
+function makeRelativePath(string $fromDir, string $toFile): string
+{
+    $fromParts = explode('/', trim(str_replace('\\', '/', $fromDir), '/'));
+    $toParts = explode('/', trim(str_replace('\\', '/', $toFile), '/'));
 
-    <script src="../../../../howler.core.js"></script>
-    <link rel="stylesheet" href="../../../../css.css">
-</head>
-<body>
-<nav>
-    <a href="../../../../index.html" class="logo">
-        <span>🎼</span> Ecos del Atlántico
-    </a>
-    <ul>
-        <li><a href="../../voces.html">Elegir voz</a></li>
-        <li><a href="../../../../ayuda.html" class="help-link">AYUDA</a></li>
-    </ul>
-</nav>
-
-<p class="selection-kicker"><span class="nota-musical">♫</span> {$songTitle} <span class="nota-musical">♫</span></p>
-<h1 class="titulo-ficha">Ficha{$fichaNumber}/{$totalFichas} {$voiceLabel}</h1>
-
-{$navMarkup}
-{$particellaMarkup}
-<div class="contenedor">
-    <h1>Reproductor Multipista</h1>
-
-    <div class="controles-globales">
-        <button id="btn-reproductor" class="btn-principal">▶ Reproducir Todo</button>
-    </div>
-
-    <div id="mezclador-pistas"></div>
-    {$guiaPendiente}</div>
-
-<script>
-const fuentesPistas = [
-    { id: 'guitarra', nombre: '🎵 Guitarra', url: '{$guitarPath}' }{$tracksSeparator}{$guideTrack}
-];
-
-const pistas = {};
-let enReproduccion = false;
-
-const btnReproductor = document.getElementById('btn-reproductor');
-const contenedorPistas = document.getElementById('mezclador-pistas');
-
-fuentesPistas.forEach(pistaInfo => {
-    pistas[pistaInfo.id] = new Howl({
-        src: [pistaInfo.url],
-        loop: true,
-        volume: 0.7
-    });
-
-    crearFaderInterfaz(pistaInfo);
-});
-
-function crearFaderInterfaz(pistaInfo) {
-    const divPista = document.createElement('div');
-    divPista.className = 'pista';
-
-    const info = document.createElement('div');
-    info.className = 'info-pista';
-    info.textContent = pistaInfo.nombre;
-
-    const input = document.createElement('input');
-    input.type = 'range';
-    input.className = 'fader-volumen';
-    input.min = '0';
-    input.max = '1';
-    input.step = '0.01';
-    input.value = '0.7';
-
-    const valorTxt = document.createElement('div');
-    valorTxt.className = 'valor-volumen';
-    valorTxt.textContent = '70%';
-
-    input.addEventListener('input', (e) => {
-        const volumen = parseFloat(e.target.value);
-        pistas[pistaInfo.id].volume(volumen);
-        valorTxt.textContent = Math.round(volumen * 100) + '%';
-    });
-
-    divPista.appendChild(info);
-    divPista.appendChild(input);
-    divPista.appendChild(valorTxt);
-    contenedorPistas.appendChild(divPista);
-}
-
-btnReproductor.addEventListener('click', () => {
-    if (!enReproduccion) {
-        Object.keys(pistas).forEach(id => pistas[id].play());
-        btnReproductor.textContent = '⏸ Pausar Todo';
-        btnReproductor.style.background = '#ff007f';
-        enReproduccion = true;
-    } else {
-        Object.keys(pistas).forEach(id => pistas[id].pause());
-        btnReproductor.textContent = '▶ Reproducir Todo';
-        btnReproductor.style.background = '#00e5ff';
-        enReproduccion = false;
+    $common = 0;
+    $limit = min(count($fromParts), count($toParts) - 1);
+    while ($common < $limit && $fromParts[$common] === $toParts[$common]) {
+        $common++;
     }
-});
-</script>
-</body>
-</html>
-HTML;
+
+    $ups = count($fromParts) - $common;
+    $relative = str_repeat('../', $ups);
+    $relative .= implode('/', array_slice($toParts, $common));
+
+    return $relative === '' ? '.' : $relative;
 }
 
 function findParticella(string $voiceDirectory, int $fichaNumber, int $voiceNumber): ?string
@@ -445,44 +430,8 @@ function findParticellaSources(string $directory): array
  * @param array<string, mixed> $song
  * @return array<int, array<int, int>> [voz][ficha] => altura
  */
-function readParticellaHeights(array $song): array
-{
-    $heights = [];
-
-    foreach (($song['voices'] ?? []) as $voiceIndex => $voice) {
-        foreach (($voice['fichas'] ?? []) as $ficha) {
-            if (!is_array($ficha) || !isset($ficha['ficha'])) {
-                continue;
-            }
-
-            $height = $ficha['particella_height'] ?? null;
-            if (is_numeric($height) && (int) $height > 0) {
-                $heights[$voiceIndex + 1][(int) $ficha['ficha']] = (int) $height;
-            }
-        }
-    }
-
-    return $heights;
-}
-
-/**
- * Genera el PNG de la particella de una voz con pdftoppm a partir de su PDF.
- *
- * Si se recibe $sourcePdf se usa ese PDF (por ejemplo, el encontrado en
- * partitura_dropbox_path) y se crea la carpeta de destino si hace falta.
- * Si no, se busca en la carpeta de la voz: primero el PDF canonico
- * particella_{ficha}_voz{voz}.pdf y despues el unico PDF detectado como
- * particella. Si hay varios PDF de origen no canonicos se lanza una
- * excepcion, para no elegir a ciegas.
- *
- * El PNG siempre se escribe con el nombre canonico
- * particella_{ficha}_voz{voz}.png y se regenera siempre.
- *
- * @param int $cropHeight Altura de recorte en px, leida de site.json.
- * @return int 1 si se genera el PNG, 0 si no hay PDF de origen.
- */
 function renderParticellaPng(
-    string $sourcePdf,
+    ?string $sourcePdf,
     string $voiceDirectory,
     int $fichaNumber,
     int $voiceNumber,
@@ -555,185 +504,4 @@ function renderParticellaPng(
 
     echo "Generado: {$pngPath}\n";
     return 1;
-}
-
-function createParticellaMarkup(?string $particella, int $fichaNumber, int $voiceNumber): string
-{
-    if ($particella === null) {
-        $esperada = htmlspecialchars("particella_{$fichaNumber}_voz{$voiceNumber}.png", ENT_QUOTES, 'UTF-8');
-        return "<p class=\"particella-pendiente\">Particella pendiente de incorporar: {$esperada}</p>";
-    }
-
-    $safeName = htmlspecialchars($particella, ENT_QUOTES, 'UTF-8');
-    $safeUrl = './' . rawurlencode($particella);
-    $extension = strtolower(pathinfo($particella, PATHINFO_EXTENSION));
-
-    if ($extension === 'png') {
-        return "<img src=\"{$safeUrl}\" alt=\"Particella\">";
-    }
-
-    return <<<HTML
-<object class="particella-pdf" data="{$safeUrl}" type="application/pdf">
-    <a href="{$safeUrl}">Abrir particella {$safeName}</a>
-</object>
-HTML;
-}
-
-function createFichaNav(
-    int $fichaNumber,
-    int $voiceNumber,
-    ?int $prevFicha,
-    ?int $nextFicha
-): string {
-    $voiceLabel = "voz{$voiceNumber}";
-
-    if ($prevFicha !== null) {
-        $prevLink = "<a href=\"../../ficha{$prevFicha}/{$voiceLabel}/{$voiceLabel}.html\"><span class=\"nav-arrow\">&lt;</span> Anterior</a>";
-    } else {
-        $prevLink = '<span class="nav-placeholder"></span>';
-    }
-
-    if ($nextFicha !== null) {
-        $nextLink = "<a href=\"../../ficha{$nextFicha}/{$voiceLabel}/{$voiceLabel}.html\">Siguiente <span class=\"nav-arrow\">&gt;</span></a>";
-    } else {
-        $nextLink = '<span class="nav-placeholder"></span>';
-    }
-
-    return "<nav class=\"ficha-nav\">{$prevLink}{$nextLink}</nav>";
-}
-
-/**
- * Genera las paginas indice fichas_voz*.html de cada voz a partir de
- * config/site.json (voices[].slug/label/folder/pages.fichas, total_fichas
- * de la cancion y bloque fichas_index con kicker, intro y first/middle/last).
- *
- * Si la cancion no esta en site.json o le faltan datos, se lanza una
- * excepcion.
- *
- * @param array<string, mixed> $site
- * @return int Numero de indices generados.
- */
-function generateFichasIndexes(string $root, array $site, string $songSlug, int $fallbackTotal): int
-{
-    $generated = 0;
-
-    $song = null;
-    foreach (($site['songs'] ?? []) as $candidate) {
-        if (is_array($candidate) && ($candidate['slug'] ?? null) === $songSlug) {
-            $song = $candidate;
-            break;
-        }
-    }
-
-    if ($song === null) {
-        throw new RuntimeException("Cancion '{$songSlug}' no encontrada en site.json.");
-    }
-
-    $brand = isset($site['site_title']) && is_string($site['site_title'])
-        ? $site['site_title']
-        : 'Ecos del Atlántico';
-    $texts = array_merge(
-        [
-            'kicker' => 'Tu recorrido de estudio',
-            'intro' => 'Avanza de la ficha 1 a la {total} y prepara tu parte paso a paso.',
-            'first' => 'Comenzar',
-            'middle' => 'Continuar',
-            'last' => 'Final',
-        ],
-        isset($site['fichas_index']) && is_array($site['fichas_index']) ? $site['fichas_index'] : []
-    );
-    $total = isset($song['total_fichas']) ? (int) $song['total_fichas'] : $fallbackTotal;
-
-    foreach (($song['voices'] ?? []) as $position => $voice) {
-        if (!is_array($voice)
-            || !isset($voice['slug'], $voice['label'], $voice['folder'])
-            || !is_string($voice['slug'])
-            || !is_string($voice['label'])
-            || !is_string($voice['folder'])
-            || !isset($voice['pages']['fichas'])
-            || !is_string($voice['pages']['fichas'])
-        ) {
-            throw new RuntimeException("Voz {$position} sin slug/label/folder/pages.fichas en site.json.");
-        }
-
-        $voiceNumber = $position + 1;
-        if (preg_match('/(\d+)$/', $voice['slug'], $matches) === 1) {
-            $voiceNumber = (int) $matches[1];
-        }
-
-        $html = createFichasIndexPage($brand, $voice['label'], $voiceNumber, $total, $texts);
-        $outputPath = $root . '/' . $voice['folder'] . '/' . $voice['pages']['fichas'];
-
-        $result = LibCode::writeIfChanged($outputPath, $html, true, false);
-        if ($result === 'generated') {
-            $generated++;
-        }
-    }
-
-    return $generated;
-}
-
-function createFichasIndexPage(
-    string $brand,
-    string $voiceLabel,
-    int $voiceNumber,
-    int $totalFichas,
-    array $texts
-): string {
-    $safeBrand = LibCode::escape($brand);
-    $safeLabel = LibCode::escape($voiceLabel);
-    $safeKicker = LibCode::escape((string) ($texts['kicker'] ?? ''));
-    $safeIntro = LibCode::escape(
-        str_replace('{total}', (string) $totalFichas, (string) ($texts['intro'] ?? ''))
-    );
-
-    $cards = '';
-    for ($fichaNumber = 1; $fichaNumber <= $totalFichas; $fichaNumber++) {
-        $tag = (string) ($texts['middle'] ?? '');
-        if ($fichaNumber === 1) {
-            $tag = (string) ($texts['first'] ?? '');
-        } elseif ($fichaNumber === $totalFichas) {
-            $tag = (string) ($texts['last'] ?? '');
-        }
-        $number = str_pad((string) $fichaNumber, 2, '0', STR_PAD_LEFT);
-        $safeTag = LibCode::escape($tag);
-        if ($cards !== '') {
-            $cards .= "\n";
-        }
-        $cards .= "            <a href=\"ficha{$fichaNumber}/voz{$voiceNumber}/voz{$voiceNumber}.html\" class=\"ficha-card\"><span>{$number}</span><strong>Ficha {$fichaNumber}</strong><small>{$safeTag}</small></a>";
-    }
-
-    return <<<HTML
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fichas {$safeLabel} - {$safeBrand}</title>
-    <link rel="stylesheet" href="../../css.css">
-</head>
-<body>
-
-    <nav>
-        <a href="../../index.html" class="logo">
-            <span>🎼</span>{$safeBrand}
-        </a>
-        <ul>
-            <li><a href="../../ayuda.html" class="help-link">AYUDA</a></li>
-        </ul>
-    </nav>
-
-    <main class="selection-page ficha-selection">
-        <header class="selection-intro">
-            <p class="selection-kicker">{$safeKicker}</p>
-            <h1>Fichas · {$safeLabel}</h1>
-            <p>{$safeIntro}</p>
-        </header>
-        <section class="ficha-grid" aria-label="Fichas de {$safeLabel}">
-{$cards}
-        </section>
-    </main>
-</body>
-</html>
-HTML;
 }

@@ -3,104 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Can't Help Falling in Love - Ficha7/7 voz3</title>
+    <title>Can't Help Falling in Love with You - Ficha7/7 voz3</title>
 
-    <script src="../../../../howler.core.js"></script>
+    <script src="../../../../js/howler.core.js"></script>
+    <script src="../../../../js/i18n.js"></script>
     <link rel="stylesheet" href="../../../../css.css">
 </head>
-<body>
+<body class="voice-3">
 <nav>
     <a href="../../../../index.html" class="logo">
-        <span>🎼</span> Ecos del Atlántico
+        <span>🎼</span> <span data-i18n="brand">Ecos del Atlántico</span>
     </a>
     <ul>
-        <li><a href="../../voces.html">Elegir voz</a></li>
-        <li><a href="../../../../ayuda.html" class="help-link">AYUDA</a></li>
+        <li><a href="../../voces.html" data-i18n="nav_voces">Elegir voz</a></li>
+        <li><a href="../../../../ayuda.html" class="help-link" data-i18n="nav_ayuda">AYUDA</a></li>
+        <li class="lang-switch"><button onclick="setLang('es')">ES</button><button onclick="setLang('en')">EN</button></li>
     </ul>
 </nav>
 
-<p class="selection-kicker"><span class="nota-musical">♫</span> Can't Help Falling in Love <span class="nota-musical">♫</span></p>
+<p class="selection-kicker"><span class="nota-musical">♫</span> Can't Help Falling in Love with You <span class="nota-musical">♫</span></p>
 <h1 class="titulo-ficha">Ficha7/7 voz3</h1>
 
-<nav class="ficha-nav"><a href="../../ficha6/voz3/voz3.html"><span class="nav-arrow">&lt;</span> Anterior</a><span class="nav-placeholder"></span></nav>
+<nav class="ficha-nav"><a href="../../ficha6/voz3/voz3.html" data-i18n="prev"><span class="nav-arrow">&lt;</span> Anterior</a><span class="nav-placeholder"></span></nav>
 <img src="./particella_7_voz3.png" alt="Particella">
 <div class="contenedor">
-    <h1>Reproductor Multipista</h1>
+    <h1 data-i18n="player_title">Reproductor Multipista</h1>
 
     <div class="controles-globales">
-        <button id="btn-reproductor" class="btn-principal">▶ Reproducir Todo</button>
+        <button id="btn-reproductor" class="btn-principal" data-playing="0">▶</button>
+    </div>
+    <div class="barra-progreso-contenedor">
+        <input type="range" id="barra-progreso" min="0" max="100" value="0" step="0.1">
+        <span id="progreso-texto">0%</span>
     </div>
 
     <div id="mezclador-pistas"></div>
-    <p class="guia-pendiente">Guía pendiente de incorporar: guia_7_voz_3.m4a</p>
+    <p class="guia-pendiente" data-i18n="pending_guide" data-expected="guia_7_voz_3.m4a">Guía pendiente de incorporar: guia_7_voz_3.m4a</p>
 </div>
 
 <script>
 const fuentesPistas = [
-    { id: 'guitarra', nombre: '🎵 Guitarra', url: '../guitarra7.mp3' }
+
 ];
-
-const pistas = {};
-let enReproduccion = false;
-
-const btnReproductor = document.getElementById('btn-reproductor');
-const contenedorPistas = document.getElementById('mezclador-pistas');
-
-fuentesPistas.forEach(pistaInfo => {
-    pistas[pistaInfo.id] = new Howl({
-        src: [pistaInfo.url],
-        loop: true,
-        volume: 0.7
-    });
-
-    crearFaderInterfaz(pistaInfo);
-});
-
-function crearFaderInterfaz(pistaInfo) {
-    const divPista = document.createElement('div');
-    divPista.className = 'pista';
-
-    const info = document.createElement('div');
-    info.className = 'info-pista';
-    info.textContent = pistaInfo.nombre;
-
-    const input = document.createElement('input');
-    input.type = 'range';
-    input.className = 'fader-volumen';
-    input.min = '0';
-    input.max = '1';
-    input.step = '0.01';
-    input.value = '0.7';
-
-    const valorTxt = document.createElement('div');
-    valorTxt.className = 'valor-volumen';
-    valorTxt.textContent = '70%';
-
-    input.addEventListener('input', (e) => {
-        const volumen = parseFloat(e.target.value);
-        pistas[pistaInfo.id].volume(volumen);
-        valorTxt.textContent = Math.round(volumen * 100) + '%';
-    });
-
-    divPista.appendChild(info);
-    divPista.appendChild(input);
-    divPista.appendChild(valorTxt);
-    contenedorPistas.appendChild(divPista);
-}
-
-btnReproductor.addEventListener('click', () => {
-    if (!enReproduccion) {
-        Object.keys(pistas).forEach(id => pistas[id].play());
-        btnReproductor.textContent = '⏸ Pausar Todo';
-        btnReproductor.style.background = '#ff007f';
-        enReproduccion = true;
-    } else {
-        Object.keys(pistas).forEach(id => pistas[id].pause());
-        btnReproductor.textContent = '▶ Reproducir Todo';
-        btnReproductor.style.background = '#00e5ff';
-        enReproduccion = false;
-    }
-});
 </script>
+<script src="../../../../js/player.js"></script>
 </body>
 </html>

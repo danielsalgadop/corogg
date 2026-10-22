@@ -1,0 +1,20 @@
+{
+  "nav_repertorio": "Repertorio",
+  "nav_ayuda": "AYUDA",
+  "nav_voces": "Elegir voz",
+  "brand": "Ecos del Atlántico",
+  "tagline": "Una familia, muchas voces",
+  "pending_guide": "Guía pendiente de incorporar: {expected}",
+  "player_title": "Reproductor Multipista",
+  "track_guitar": "🎵 Guitarra",
+  "pending_particella": "Particella pendiente de incorporar: {expected}",
+  "prev": "Anterior",
+  "next": "Siguiente",
+  "fichas_title": "Fichas · {label}",
+  "ficha": "Ficha {number}",
+  "first": "Comenzar",
+  "middle": "Continuar",
+  "last": "Final",
+  "explore_voices": "Explorar voces",
+  "sheet_music": "Partitura"
+}

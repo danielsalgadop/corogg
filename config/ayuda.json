@@ -49,6 +49,10 @@
       "video": {
         "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
         "title": "Cómo grabar tu voz"
+      },
+      "cta": {
+        "label": "Ver guía de grabación",
+        "href": "proceso_grabacion.html"
       }
     },
     {
@@ -58,6 +62,10 @@
       "video": {
         "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
         "title": "Cómo enviar tu grabación"
+      },
+      "cta": {
+        "label": "Ver guía de envío",
+        "href": "proceso_grabacion.html"
       }
     }
   ]

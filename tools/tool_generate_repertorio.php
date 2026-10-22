@@ -14,10 +14,10 @@ $root = dirname(__DIR__);
 $inputPath = $root . '/config/site.json';
 $outputPath = $root . '/repertorio.html';
 
-require_once $root . '/lib_code.php';
+require_once $root . '/tools/libs/lib_code.php';
 
 try {
-    [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), []);
+    [$args, $force] = LibCode::parseToolArgs(array_slice($argv, 1), ['lang' => 'value']);
 } catch (InvalidArgumentException $exception) {
     fwrite(STDERR, $exception->getMessage() . "\n");
     exit(1);
@@ -41,6 +41,9 @@ try {
 }
 
 validateSiteData($data);
+
+$lang = is_string($args['lang'] ?? null) && $args['lang'] !== '' ? (string) $args['lang'] : 'es';
+LibCode::setLanguage($root, $lang);
 
 $html = createRepertoryPage($data);
 
@@ -102,23 +105,25 @@ function createRepertoryPage(array $data): string
     $pageTitle = $data['repertorio']['title'];
     $pageSubtitle = $data['repertorio']['subtitle'];
     $cards = '';
+    $exploreVoices = LibCode::t('explore_voices');
+    $sheetMusic = LibCode::t('sheet_music');
 
     foreach ($data['songs'] as $song) {
         $number = LibCode::escape(str_pad((string) ((int) array_search($song, $data['songs'], true) + 1), 2, '0', STR_PAD_LEFT));
         $title = LibCode::escape($song['title']);
         $vocesUrl = $song['folder'] . '/voces.html';
-        $partituraUrl = $song['partitura'];
+        $partituraUrl = $song['folder'] . '/' . $song['partitura'];
 
         $cards .= <<<HTML
             <article class="song-card">
                 <a href="{$vocesUrl}" class="song-card-main">
                     <span class="song-card-number">{$number}</span>
                     <strong>{$title}</strong>
-                    <span>Explorar voces <span aria-hidden="true">→</span></span>
+                    <span data-i18n="explore_voices">{$exploreVoices}</span> <span aria-hidden="true">→</span></span>
                 </a>
                 <a href="{$partituraUrl}" class="song-card-sheet" title="Partitura completa" aria-label="Partitura completa" target="_blank">
                     <span aria-hidden="true">🎼</span>
-                    <span>Partitura</span>
+                    <span data-i18n="sheet_music">{$sheetMusic}</span>
                 </a>
             </article>
 HTML;

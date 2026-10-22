@@ -20,6 +20,10 @@ body {
     line-height: 1.6;
 }
 
+body.voice-1 { background: radial-gradient(circle, rgba(170, 21, 21, 0.35) 0%, #111625 100%); }
+body.voice-2 { background: radial-gradient(circle, rgba(223, 183, 108, 0.3) 0%, #111625 100%); }
+body.voice-3 { background: radial-gradient(circle, rgba(0, 40, 104, 0.45) 0%, #111625 100%); }
+
 h1, h2, h3 {
     font-family: 'Cinzel', serif;
     letter-spacing: 2px;
@@ -285,7 +289,7 @@ nav a:hover {
     gap: 1rem;
     grid-template-columns: repeat(3, 1fr);
     margin: 0 auto;
-    max-width: 900px;
+    max-width: 1050px;
 }
 
 .ficha-card {
@@ -689,7 +693,7 @@ body > img {
 .mixer-container,
 .contenedor {
     width: 100%;
-    max-width: 400px;
+    max-width: 900px;
     margin-inline: auto;
     box-sizing: border-box;
     background: #1e1e1e;
@@ -732,32 +736,43 @@ body > img {
 
 .pista {
     background: #282828;
-    padding: 15px;
-    margin-bottom: 12px;
+    padding: 12px 16px;
+    margin-bottom: 0;
     border-radius: 8px;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 15px;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.icono-volumen {
+    font-size: 1.6rem;
+    min-width: 30px;
+    text-align: center;
 }
 
 .info-pista {
-    min-width: 80px;
-    font-size: 14px;
+    min-width: 90px;
+    font-size: 18px;
     font-weight: 500;
 }
 
 .fader-volumen {
     flex-grow: 1;
+    width: 8px;
+    height: 90px;
     accent-color: #00e5ff;
     cursor: pointer;
+    writing-mode: vertical-lr;
+    direction: rtl;
 }
 
 .valor-volumen {
-    min-width: 35px;
+    min-width: 45px;
     text-align: right;
     font-family: monospace;
-    font-size: 14px;
+    font-size: 16px;
     color: #aaaaaa;
 }
 
@@ -851,3 +866,27 @@ body > img {
         padding: 0.5rem 0.75rem;
     }
 }
+
+.lang-switch { display: flex; gap: 0.4rem; align-items: center; }
+.lang-switch button { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: var(--text-light); padding: 0.2rem 0.5rem; cursor: pointer; border-radius: 4px; }
+.lang-switch button:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+.lang-switch button.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(223, 183, 108, 0.15); }
+
+.barra-progreso-contenedor {
+    margin: 1rem 0 1.5rem;
+}
+
+#barra-progreso {
+    width: 100%;
+    accent-color: #00e5ff;
+    cursor: pointer;
+    direction: ltr;
+}
+
+.btn-redondo { border-radius: 50%; width: 48px; height: 48px; padding: 0; display: flex; align-items: center; justify-content: center; }
+
+#mezclador-pistas { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; justify-content: center; }
+
+#progreso-texto { color: #d0d0d0; }
+
+#btn-reproductor { font-size: 2rem; padding: 12px 32px; box-shadow: 0 0 12px rgba(0,229,255,0.6); }

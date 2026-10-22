@@ -181,7 +181,7 @@ if [ -d "$TARGET_DIR/songs" ]; then
 
             for candidato in "${candidatos[@]}"; do
                 tipo=$(php -r 'require $argv[1]; echo LibCode::detectFileType($argv[2]) ?? "";' \
-                    "$PWD/lib_code.php" "$(basename "$candidato")" 2>/dev/null)
+                    "$PWD/tools/libs/lib_code.php" "$(basename "$candidato")" 2>/dev/null)
                 if [ "$tipo" = "particella" ]; then
                     particellas+=("$candidato")
                 fi
